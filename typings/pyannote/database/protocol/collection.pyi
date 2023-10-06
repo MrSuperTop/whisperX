@@ -1,0 +1,6 @@
+from .protocol import Protocol as Protocol
+from typing import Dict, Iterator
+
+class CollectionProtocol(Protocol):
+    def files_iter(self) -> Iterator[Dict]: ...
+    def train_iter(self) -> Iterator[Dict]: ...

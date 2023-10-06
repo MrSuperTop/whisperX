@@ -3,19 +3,23 @@ Forced Alignment with Whisper
 C. Max Bain
 """
 from dataclasses import dataclass
-from typing import Iterable, Union, List
+from typing import Iterable, List, Union
 
 import numpy as np
 import pandas as pd
 import torch
 import torchaudio
+from nltk.tokenize.punkt import PunktParameters, PunktSentenceTokenizer
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 
 from .audio import SAMPLE_RATE, load_audio
+from .types import (
+    AlignedTranscriptionResult,
+    SingleAlignedSegment,
+    SingleSegment,
+    SingleWordSegment,
+)
 from .utils import interpolate_nans
-from .types import AlignedTranscriptionResult, SingleSegment, SingleAlignedSegment, SingleWordSegment
-import nltk
-from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
 
 PUNKT_ABBREVIATIONS = ['dr', 'vs', 'mr', 'mrs', 'prof']
 

@@ -1,0 +1,6 @@
+from ctranslate2.converters.marian import MarianConverter as MarianConverter
+
+class OpusMTConverter(MarianConverter):
+    def __init__(self, model_dir: str) -> None: ...
+
+def main() -> None: ...

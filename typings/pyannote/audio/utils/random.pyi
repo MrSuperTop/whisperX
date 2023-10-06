@@ -1,0 +1,3 @@
+from random import Random
+
+def create_rng_for_worker(epoch: int) -> Random: ...

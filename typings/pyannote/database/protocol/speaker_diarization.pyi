@@ -1,0 +1,3 @@
+from .segmentation import SegmentationProtocol as SegmentationProtocol
+
+class SpeakerDiarizationProtocol(SegmentationProtocol): ...

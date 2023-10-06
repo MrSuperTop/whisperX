@@ -1,0 +1,1 @@
+from ctranslate2._ext import Whisper as Whisper, WhisperGenerationResult as WhisperGenerationResult, WhisperGenerationResultAsync as WhisperGenerationResultAsync

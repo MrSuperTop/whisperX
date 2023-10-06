@@ -1,0 +1,3 @@
+from typing import Text
+
+def pretrained(checkpoint: Text): ...

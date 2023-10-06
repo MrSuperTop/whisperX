@@ -1,10 +1,15 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import NewType
+
 import numpy as np
 import pandas as pd
-from pyannote.audio import Pipeline
-from typing import Optional, Union
 import torch
+from pyannote.audio import Pipeline
+from pyannote.core.segment import Segment
 
-from .audio import load_audio, SAMPLE_RATE
+from .audio import SAMPLE_RATE, load_audio
 
 
 class DiarizationPipeline:
@@ -12,13 +17,13 @@ class DiarizationPipeline:
         self,
         model_name="pyannote/speaker-diarization-3.0",
         use_auth_token=None,
-        device: Optional[Union[str, torch.device]] = "cpu",
+        device: str | torch.device | None = "cpu",
     ):
         if isinstance(device, str):
             device = torch.device(device)
         self.model = Pipeline.from_pretrained(model_name, use_auth_token=use_auth_token).to(device)
 
-    def __call__(self, audio: Union[str, np.ndarray], min_speakers=None, max_speakers=None):
+    def __call__(self, audio: str | np.ndarray, min_speakers=None, max_speakers=None):
         if isinstance(audio, str):
             audio = load_audio(audio)
         audio_data = {
@@ -48,7 +53,7 @@ def assign_word_speakers(diarize_df, transcript_result, fill_nearest=False):
             # sum over speakers
             speaker = dia_tmp.groupby("speaker")["intersection"].sum().sort_values(ascending=False).index[0]
             seg["speaker"] = speaker
-        
+
         # assign speaker to words
         if 'words' in seg:
             for word in seg['words']:
@@ -64,12 +69,23 @@ def assign_word_speakers(diarize_df, transcript_result, fill_nearest=False):
                         # sum over speakers
                         speaker = dia_tmp.groupby("speaker")["intersection"].sum().sort_values(ascending=False).index[0]
                         word["speaker"] = speaker
-        
-    return transcript_result            
+
+    return transcript_result
 
 
-class Segment:
-    def __init__(self, start, end, speaker=None):
-        self.start = start
-        self.end = end
-        self.speaker = speaker
+SpeakerId = NewType('SpeakerId', str)
+
+
+@dataclass(frozen=True)
+class SegmentDiarized:
+    start: float
+    end: float
+    speaker: SpeakerId
+
+    @classmethod
+    def plain_from_segment(
+        cls,
+        create_from: Segment,
+        speaker: SpeakerId = SpeakerId('UNKNOWN')
+    ) -> SegmentDiarized:
+        return cls(start=create_from.start, end=create_from.end, speaker=speaker)

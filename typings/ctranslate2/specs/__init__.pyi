@@ -1,0 +1,5 @@
+from ctranslate2.specs.attention_spec import RotaryScalingType as RotaryScalingType
+from ctranslate2.specs.common_spec import Activation as Activation, EmbeddingsMerge as EmbeddingsMerge
+from ctranslate2.specs.model_spec import LanguageModelSpec as LanguageModelSpec, LayerSpec as LayerSpec, ModelSpec as ModelSpec, SequenceToSequenceModelSpec as SequenceToSequenceModelSpec
+from ctranslate2.specs.transformer_spec import TransformerDecoderModelSpec as TransformerDecoderModelSpec, TransformerDecoderSpec as TransformerDecoderSpec, TransformerEncoderModelSpec as TransformerEncoderModelSpec, TransformerEncoderSpec as TransformerEncoderSpec, TransformerSpec as TransformerSpec
+from ctranslate2.specs.whisper_spec import WhisperSpec as WhisperSpec

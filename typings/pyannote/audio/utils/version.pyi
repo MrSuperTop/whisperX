@@ -1,0 +1,3 @@
+from typing import Text
+
+def check_version(library: Text, theirs: Text, mine: Text, what: Text = ...): ...
