@@ -1,9 +1,17 @@
+from __future__ import annotations
+
 import json
 import os
 import re
 import sys
 import zlib
-from typing import Callable, Optional, TextIO
+from typing import Any, Callable, Optional, TextIO
+
+import pandas as pd
+import torch
+from pandas._typing import InterpolateOptions
+
+from whisperx.types import DeviceType
 
 LANGUAGES = {
     "en": "english",
@@ -273,7 +281,9 @@ class SubtitlesWriter(ResultWriter):
                             timing["word"] = "\n" + timing["word"]
                         line_len = len(timing["word"].strip())
                     subtitle.append(timing)
-                    times.append((segment["start"], segment["end"], segment.get("speaker")))
+                    times.append(
+                        (segment["start"], segment["end"], segment.get("speaker"))
+                    )
                     if "start" in timing:
                         last = timing["start"]
             if len(subtitle) > 0:
@@ -305,13 +315,18 @@ class SubtitlesWriter(ResultWriter):
                             if last != start:
                                 yield last, start, prefix + subtitle_text
 
-                            yield start, end, prefix + " ".join(
-                                [
-                                    re.sub(r"^(\s*)(.*)$", r"\1<u>\2</u>", word)
-                                    if j == i
-                                    else word
-                                    for j, word in enumerate(all_words)
-                                ]
+                            yield (
+                                start,
+                                end,
+                                prefix
+                                + " ".join(
+                                    [
+                                        re.sub(r"^(\s*)(.*)$", r"\1<u>\2</u>", word)
+                                        if j == i
+                                        else word
+                                        for j, word in enumerate(all_words)
+                                    ]
+                                ),
                             )
                             last = end
                 else:
@@ -396,9 +411,10 @@ class WriteAudacity(ResultWriter):
             print(segment["start"], file=file, end=ARROW)
             print(segment["end"], file=file, end=ARROW)
             print(
-                (("[[" + segment["speaker"] + "]]") if "speaker" in segment else "") + segment["text"].strip().replace(
-                    "\t", " "
-                ), file=file, flush=True
+                (("[[" + segment["speaker"] + "]]") if "speaker" in segment else "")
+                + segment["text"].strip().replace("\t", " "),
+                file=file,
+                flush=True,
             )
 
 
@@ -407,6 +423,20 @@ class WriteJSON(ResultWriter):
 
     def write_result(self, result: dict, file: TextIO, options: dict):
         json.dump(result, file, ensure_ascii=False)
+
+
+def get_device(device: torch.device | int | DeviceType) -> torch.device:
+    if isinstance(device, torch.device):
+        return device
+    elif isinstance(device, str):
+        if device == "auto":
+            return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        return torch.device(device)
+    elif device < 0:
+        return torch.device("cpu")
+    else:
+        return torch.device(f"cuda:{device}")
 
 
 def get_writer(
@@ -437,7 +467,7 @@ def get_writer(
     return writers[output_format](output_dir)
 
 
-def interpolate_nans(x, method='nearest'):
+def interpolate_nans(x: pd.Series[Any], method: InterpolateOptions = "nearest") -> pd.Series[Any]:
     if x.notnull().sum() > 1:
         return x.interpolate(method=method).ffill().bfill()
     else:

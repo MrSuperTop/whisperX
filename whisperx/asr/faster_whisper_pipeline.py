@@ -24,7 +24,9 @@ from whisperx.asr.whisper_model import (
     log_mel_spectrogram,
 )
 from whisperx.audio import N_SAMPLES, SAMPLE_RATE, AudioData, load_audio
+from whisperx.logging import get_logger
 from whisperx.types import DeviceType, LanguageCode, TaskType
+from whisperx.utils import get_device
 from whisperx.vad import SegmentsBoundsMerge, merge_chunks
 from whisperx.vad.vad_model import VoiceActivityDetectionPipeline
 
@@ -58,7 +60,7 @@ class PostprocessParams(TypedDict):
     ...
 
 
-T = TypeVar('T', torch.Tensor, AudioData)
+T = TypeVar("T", torch.Tensor, AudioData)
 
 
 @dataclass()
@@ -72,7 +74,7 @@ class BatchingWhisperOutput(ModelOutput):
 
 
 # FIXME: Move to types
-@dataclass(frozen=True)
+@dataclass(slots=True)
 class Segment:
     start: float
     end: float
@@ -90,20 +92,21 @@ def is_tokenizer_wrong_or_none(
     tokenizer: faster_whisper.tokenizer.Tokenizer | None,
     is_multilingual: bool,
     check_language: LanguageCode | None,
-    check_task: TaskType
+    check_task: TaskType,
 ) -> TypeGuard[faster_whisper.tokenizer.Tokenizer]:
     if tokenizer is None:
         return True
 
     formatted_given_task: str
     if is_multilingual:
-        formatted_given_task = cast(str, tokenizer.tokenizer.token_to_id("<|%s|>" % check_task)) # pyright: ignore [reportUnknownMemberType]
+        formatted_given_task = cast(
+            str, tokenizer.tokenizer.token_to_id("<|%s|>" % check_task)
+        )  # pyright: ignore [reportUnknownMemberType]
     else:
         formatted_given_task = check_task
 
-    is_wrong_tokenizer = (
-        check_task != formatted_given_task
-            or check_language != cast(LanguageCode, tokenizer.language_code)
+    is_wrong_tokenizer = check_task != formatted_given_task or check_language != cast(
+        LanguageCode, tokenizer.language_code
     )
 
     return is_wrong_tokenizer
@@ -129,34 +132,27 @@ class FasterWhisperPipeline(Pipeline):
         language: LanguageCode | None = None,
         suppress_numerals: bool = False,
         batch_size: int | None = None,
-        **kwargs: PreprocessParams
+        **kwargs: PreprocessParams,
     ) -> None:
-        # FIXME: Custom logger getter
-        self.logger = faster_whisper.transcribe.get_logger()
+        self.logger = get_logger(__name__)
 
         self.model = model
         self._tokenizer = tokenizer
         self.options = options
-        self.preset_language = language
+        self.preset_language: LanguageCode | None = language
         self.suppress_numerals = suppress_numerals
         self._batch_size = batch_size
 
-        # FIXME: TF?
-        self._num_workers = 1
-
-        self._preprocess_params, self._forward_params, self._postprocess_params = self._sanitize_parameters(**kwargs)
+        (
+            self._preprocess_params,
+            self._forward_params,
+            self._postprocess_params,
+        ) = self._sanitize_parameters(**kwargs)
         self.call_count = 0
         self.framework = framework
 
         if self.framework == "pt":
-            if isinstance(device, torch.device):
-                self.device = device
-            elif isinstance(device, str):
-                self.device = torch.device(device)
-            elif device < 0:
-                self.device = torch.device("cpu")
-            else:
-                self.device = torch.device(f"cuda:{device}")
+            self.device = get_device(device)
         else:
             self.device = device
 
@@ -164,8 +160,7 @@ class FasterWhisperPipeline(Pipeline):
         self.vad_model = vad_model
 
     def _sanitize_parameters(
-        self,
-        **kwargs: PreprocessParams
+        self, **kwargs: PreprocessParams
     ) -> tuple[PreprocessParams, ForwardParams, PostprocessParams]:
         preprocess_kwargs: PreprocessParams = {}
         if "tokenizer" in kwargs:
@@ -174,30 +169,24 @@ class FasterWhisperPipeline(Pipeline):
         return preprocess_kwargs, {}, {}
 
     def preprocess(
-        self,
-        input_: StackedAudio[AudioData],
-        **preprocessor_params: PreprocessParams
+        self, input_: StackedAudio[AudioData], **preprocessor_params: PreprocessParams
     ) -> StackedAudio[torch.Tensor]:
         audio = input_.inputs
 
         features = log_mel_spectrogram(audio, padding=N_SAMPLES - audio.shape[0])
 
-        # FIXME: ?
-        # features = log_mel_spectrogram(stacked_audio, )
-
         return StackedAudio(inputs=features)
 
     def _forward(
-        self,
-        input_tensors: StackedAudio[torch.Tensor]
+        self, input_tensors: StackedAudio[torch.Tensor]
     ) -> BatchingWhisperOutput:
         if self._tokenizer is None:
-            raise ValueError('Could not do forward, the tokenizer on BatchingWhisperModel has to be defined')
+            raise ValueError(
+                "Could not do forward, the tokenizer on BatchingWhisperModel has to be defined"
+            )
 
         outputs = self.model.generate_segment_batched(
-            input_tensors.inputs.numpy(),
-            self._tokenizer,
-            self.options
+            input_tensors.inputs.numpy(), self._tokenizer, self.options
         )
 
         return BatchingWhisperOutput(text=outputs)
@@ -205,7 +194,7 @@ class FasterWhisperPipeline(Pipeline):
     def postprocess(
         self,
         model_outputs: BatchingWhisperOutput,
-        **postprocess_params: PostprocessParams
+        **postprocess_params: PostprocessParams,
     ) -> BatchingWhisperOutput:
         return model_outputs
 
@@ -216,7 +205,7 @@ class FasterWhisperPipeline(Pipeline):
         batch_size: int,
         preprocess_params: PreprocessParams,
         forward_params: ForwardParams,
-        postprocess_params: PostprocessParams
+        postprocess_params: PostprocessParams,
     ):
         dataset = PipelineIterator(inputs, self.preprocess, preprocess_params)
 
@@ -228,26 +217,18 @@ class FasterWhisperPipeline(Pipeline):
         def stack(
             items: Iterable[StackedAudio[torch.Tensor]]
         ) -> StackedAudio[torch.Tensor]:
-            return StackedAudio(inputs = torch.stack([x.inputs for x in items]))
+            return StackedAudio(inputs=torch.stack([x.inputs for x in items]))
 
         dataloader = torch.utils.data.DataLoader[torch.Tensor](
-            dataset,
-            num_workers=num_workers,
-            batch_size=batch_size,
-            collate_fn=stack
+            dataset, num_workers=num_workers, batch_size=batch_size, collate_fn=stack
         )
 
         model_iterator = PipelineIterator(
-            dataloader,
-            self._forward,
-            forward_params,
-            loader_batch_size=batch_size
+            dataloader, self._forward, forward_params, loader_batch_size=batch_size
         )
 
         final_iterator = PipelineIterator(
-            model_iterator,
-            self.postprocess,
-            postprocess_params
+            model_iterator, self.postprocess, postprocess_params
         )
 
         return final_iterator
@@ -258,32 +239,27 @@ class FasterWhisperPipeline(Pipeline):
         *args: Any,
         num_workers: int | None = None,
         batch_size: int | None = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> list[BatchingWhisperOutput]:
         result = cast(
             list[BatchingWhisperOutput],
-            super().__call__( # pyright: ignore [reportUnknownMemberType]
-                inputs,
-                *args,
-                num_workers=num_workers,
-                batch_size=batch_size,
-                **kwargs
-            )
+            super().__call__(  # pyright: ignore [reportUnknownMemberType]
+                inputs, *args, num_workers=num_workers, batch_size=batch_size, **kwargs
+            ),
         )
 
         return result
 
     def _get_or_infer_language_details(
-        self,
-        features: AudioData | Features,
-        given_language: LanguageCode | None = None
+        self, features: AudioData | Features, given_language: LanguageCode | None = None
     ) -> LanguageDetails:
         if given_language is None:
+            if self.preset_language is not None:
+                return LanguageDetails.get_defined(self.preset_language)
+
             if not self.model.model.is_multilingual:
                 return LanguageDetails(
-                    language = "en",
-                    language_probability = 1,
-                    all_language_probs=None
+                    language="en", language_probability=1, all_language_probs=None
                 )
             else:
                 return self.model.detect_language(features)
@@ -307,27 +283,33 @@ class FasterWhisperPipeline(Pipeline):
     def _get_tokenizer(
         self,
         for_language: LanguageCode | None,
-        for_task: TaskType = 'transcribe',
-        for_audio: AudioData | None = None
+        for_task: TaskType = "transcribe",
+        for_audio: AudioData | None = None,
     ) -> tuple[LanguageDetails, faster_whisper.tokenizer.Tokenizer]:
-        if for_language is None and for_audio is not None:
+        if (
+            for_language is None and self.preset_language is None
+        ) and for_audio is not None:
             language_details = self.model.detect_language(for_audio)
         elif for_audio is not None:
-            language_details = self._get_or_infer_language_details(for_audio, for_language)
+            language_details = self._get_or_infer_language_details(
+                for_audio, for_language
+            )
         else:
-            raise ValueError(f'Invalid configuration, atleast one param: {for_language = } or {for_audio = } has to be not None')
+            raise ValueError(
+                f"Invalid configuration, atleast one param: {for_language = } or {for_audio = } has to be not None"
+            )
 
         if is_tokenizer_wrong_or_none(
             self._tokenizer,
             self.model.model.is_multilingual,
             language_details.language,
-            for_task
+            for_task,
         ):
             new_tokenizer = faster_whisper.tokenizer.Tokenizer(
                 self.model.hf_tokenizer,
                 self.model.model.is_multilingual,
                 task=for_task,
-                language=language_details.language
+                language=language_details.language,
             )
 
             self._tokenizer = new_tokenizer
@@ -338,8 +320,7 @@ class FasterWhisperPipeline(Pipeline):
         # * the self._tokenizer is certainly not None. As far as I am concerned, it's not really possible to with TypeGuards or any means that I am aware of
 
         return language_details, cast(
-            faster_whisper.tokenizer.Tokenizer,
-            self._tokenizer
+            faster_whisper.tokenizer.Tokenizer, self._tokenizer
         )
 
     def transcribe(
@@ -348,20 +329,23 @@ class FasterWhisperPipeline(Pipeline):
         batch_size: int | None = None,
         num_workers: int = 0,
         language: LanguageCode | None = None,
-        task: TaskType = 'transcribe',
+        task: TaskType = "transcribe",
         chunk_size: int = 30,
+        # TODO: Make better?
         print_progress: bool = False,
-        combined_progress: bool = False
+        combined_progress: bool = False,
     ) -> TranscriptionResult:
         if isinstance(audio, os.PathLike | Path | str):
             loaded_audio = load_audio(audio)
         else:
             loaded_audio = audio
 
-        vad_segments = self.vad_model({
-            "waveform": torch.from_numpy(loaded_audio).unsqueeze(0), # pyright: ignore [reportUnknownMemberType]
-            "sample_rate": SAMPLE_RATE
-        })
+        vad_segments = self.vad_model(
+            {
+                "waveform": torch.from_numpy(loaded_audio).unsqueeze(0),  # pyright: ignore [reportUnknownMemberType]
+                "sample_rate": SAMPLE_RATE,
+            }
+        )
 
         vad_segments = merge_chunks(vad_segments, chunk_size)
         language_details, tokenizer = self._get_tokenizer(language, task, loaded_audio)
@@ -374,7 +358,7 @@ class FasterWhisperPipeline(Pipeline):
             print(f"Suppressing numeral and symbol tokens: {numeral_symbol_tokens}")
 
             if self.options.suppress_tokens is None:
-                raise ValueError('Options supress tokens is None but it should not.')
+                raise ValueError("Options supress tokens is None but it should not.")
 
             new_suppressed_tokens = numeral_symbol_tokens + self.options.suppress_tokens
             new_suppressed_tokens = list(set(new_suppressed_tokens))
@@ -385,8 +369,7 @@ class FasterWhisperPipeline(Pipeline):
         total_segments = len(vad_segments)
 
         def slice_data_by_vad_segments(
-            audio: AudioData,
-            segments: list[SegmentsBoundsMerge]
+            audio: AudioData, segments: list[SegmentsBoundsMerge]
         ) -> Iterable[StackedAudio[AudioData]]:
             for seg in segments:
                 f1 = int(seg.start * SAMPLE_RATE)
@@ -397,12 +380,15 @@ class FasterWhisperPipeline(Pipeline):
         for idx, out in enumerate(
             self.__call__(
                 slice_data_by_vad_segments(loaded_audio, vad_segments),
-                batch_size=batch_size, num_workers=num_workers
+                batch_size=batch_size,
+                num_workers=num_workers,
             )
         ):
             if print_progress:
                 base_progress = ((idx + 1) / total_segments) * 100
-                percent_complete = base_progress / 2 if combined_progress else base_progress
+                percent_complete = (
+                    base_progress / 2 if combined_progress else base_progress
+                )
                 print(f"Progress: {percent_complete:.2f}%...")
 
             if batch_size in [0, 1, None]:
@@ -414,7 +400,7 @@ class FasterWhisperPipeline(Pipeline):
                 Segment(
                     text=text,
                     start=round(vad_segments[idx].start, 3),
-                    end=round(vad_segments[idx].end, 3)
+                    end=round(vad_segments[idx].end, 3),
                 )
             )
 
@@ -430,5 +416,5 @@ class FasterWhisperPipeline(Pipeline):
         return TranscriptionResult(
             segments=segments,
             language=language_details.language,
-            language_details=language_details
+            language_details=language_details,
         )

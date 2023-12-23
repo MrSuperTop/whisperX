@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import os.path
 import typing
-from pathlib import Path
 
 import faster_whisper
 import faster_whisper.tokenizer
@@ -27,12 +25,13 @@ if typing.TYPE_CHECKING:
     from _typeshed import StrPath
 
 # TODO: Logging
+# TODO: Check for compute type compatibility, inform the user which compute types are compatitble with their hardware
 
 
 # TODO: https://opennmt.net/CTranslate2/python/ctranslate2.converters.TransformersConverter.html
 def load_model(
     whisper_arch_or_path: ModelArchiveOrSize | StrPath,
-    device: DeviceType = 'auto',
+    device: DeviceType = "auto",
     device_index: int | list[int] = 0,
     compute_type: ComputeType = "float16",
     language: LanguageCode | None = None,
@@ -40,10 +39,10 @@ def load_model(
     vad_options: VadOptions = VadOptions(),
     task: TaskType = "transcribe",
     download_root: StrPath | None = None,
-    threads: int = 4
+    threads: int = 4,
 ) -> FasterWhisperPipeline:
     # TODO: Proper docstring
-    '''Load a Whisper model for inference.
+    """Load a Whisper model for inference.
     Args:
         whisper_arch_or_path: str | Path - The name of the Whisper model to load or the path to the
             local model checkpoint transformed with ctranslate2.
@@ -55,9 +54,9 @@ def load_model(
         threads: int - The number of cpu threads to use per worker, e.g. will be multiplied by num workers.
     Returns:
         A Whisper pipeline.
-    '''
+    """
 
-    if isinstance(whisper_arch_or_path, str) and whisper_arch_or_path.endswith('.en'):
+    if isinstance(whisper_arch_or_path, str) and whisper_arch_or_path.endswith(".en"):
         language = "en"
 
     whisper_arch_or_path = convert_path(whisper_arch_or_path)
@@ -65,29 +64,30 @@ def load_model(
     if download_root is not None:
         download_root = convert_path(download_root)
 
-    model = BatchingWhisperModel(whisper_arch_or_path,
-                         device=device,
-                         device_index=device_index,
-                         compute_type=compute_type,
-                         download_root=download_root,
-                         cpu_threads=threads)
+    model = BatchingWhisperModel(
+        whisper_arch_or_path,
+        device=device,
+        device_index=device_index,
+        compute_type=compute_type,
+        download_root=download_root,
+        cpu_threads=threads,
+    )
 
     if language is not None:
         tokenizer = faster_whisper.tokenizer.Tokenizer(
             model.hf_tokenizer,
             model.model.is_multilingual,
             task=task,
-            language=language
+            language=language,
         )
     else:
-        print("No language specified, language will be first be detected for each audio file (increases inference time).")
+        print(
+            "No language specified, language will be first be detected for each audio file (increases inference time)."
+        )
         tokenizer = None
 
     vad_model = load_vad_model(
-        device,
-        vad_options,
-        use_auth_token=None,
-        model_dir=download_root
+        device, vad_options, use_auth_token=None, model_dir=download_root
     )
 
     return FasterWhisperPipeline(

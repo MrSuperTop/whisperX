@@ -17,6 +17,7 @@ from tqdm import tqdm
 
 from whisperx.diarize import SegmentDiarized, SpeakerId
 from whisperx.types import DeviceType
+from whisperx.utils import get_device
 from whisperx.utils.convert_path import convert_path
 from whisperx.vad.binarize import Binarize, remove_shorter_than
 from whisperx.vad.vad_model import VadOptions, VoiceActivityDetectionPipeline
@@ -52,7 +53,7 @@ def _download_model(from_url: str, model_dir: StrPath) -> StrPath:
                     loop.update(len(buffer))
 
     model_bytes = open(model_fp, "rb").read()
-    if hashlib.sha256(model_bytes).hexdigest() != from_url.split('/')[-2]:
+    if hashlib.sha256(model_bytes).hexdigest() != from_url.split("/")[-2]:
         raise RuntimeError(
             "Model has been downloaded but the SHA256 checksum does not not match. Please retry loading the model."
         )
@@ -61,10 +62,10 @@ def _download_model(from_url: str, model_dir: StrPath) -> StrPath:
 
 
 def load_vad_model(
-    device: DeviceType | torch.device,
+    device: DeviceType | int | torch.device,
     vad_options: VadOptions,
     use_auth_token: str | None = None,
-    model_dir: StrPath | None = None
+    model_dir: StrPath | None = None,
 ) -> VoiceActivityDetectionPipeline:
     model_dir = convert_path(model_dir)
 
@@ -72,24 +73,20 @@ def load_vad_model(
         model_dir = cast(str, torch.hub.get_dir())
 
     model_fp = _download_model(VAD_SEGMENTATION_URL, model_dir)
-
-    if device == 'auto':
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = get_device(device)
 
     vad_model = Model.from_pretrained(
-        convert_path(model_fp),
-        use_auth_token=use_auth_token
+        convert_path(model_fp), use_auth_token=use_auth_token
     )
 
     hyperparameters = {
         "min_duration_on": 0.1,
         "min_duration_off": 0.1,
-        **asdict(vad_options)
+        **asdict(vad_options),
     }
 
     vad_pipeline = VoiceActivityDetectionPipeline(
-        segmentation=vad_model,
-        device=torch.device(device)
+        segmentation=vad_model, device=torch.device(device)
     )
 
     vad_pipeline.instantiate(hyperparameters)
@@ -102,7 +99,7 @@ def merge_vad(
     pad_onset: float = 0.0,
     pad_offset: float = 0.0,
     min_duration_off: float = 0.0,
-    min_duration_on: float = 0.0
+    min_duration_on: float = 0.0,
 ) -> pd.DataFrame:
     active = Annotation()
     for k, vad_t in enumerate(vad_arr):
@@ -115,11 +112,12 @@ def merge_vad(
     remove_shorter_than(min_duration_on, active)
 
     active_json = active.for_json()
-    active_segs = pd.DataFrame([x['segment'] for x in active_json['content']])
+    active_segs = pd.DataFrame([x["segment"] for x in active_json["content"]])
     return active_segs
 
 
 SegmentId = tuple[float, float]
+
 
 # FIXME: Get rid of the TypedDict, when it will be clear how does the whole project structure go.
 @dataclass(frozen=True)
@@ -130,8 +128,7 @@ class SegmentsBoundsMerge:
 
 
 def merge_chunks(
-    segments: SlidingWindowFeature,
-    chunk_size: int
+    segments: SlidingWindowFeature, chunk_size: int
 ) -> list[SegmentsBoundsMerge]:
     """
     Merge operation described in paper
@@ -161,11 +158,13 @@ def merge_chunks(
 
     for seg in segments_list:
         if seg.end - curr_start > chunk_size and curr_end - curr_start > 0:
-            merged_segments.append(SegmentsBoundsMerge(
-                start = curr_start,
-                end = curr_end,
-                segments = slice_segements_ids,
-            ))
+            merged_segments.append(
+                SegmentsBoundsMerge(
+                    start=curr_start,
+                    end=curr_end,
+                    segments=slice_segements_ids,
+                )
+            )
 
             curr_start = seg.start
             slice_segements_ids: list[SegmentId] = []
@@ -176,10 +175,12 @@ def merge_chunks(
         speaker_idxs.append(seg.speaker)
 
     # add final
-    merged_segments.append(SegmentsBoundsMerge(
-        start = curr_start,
-        end = curr_end,
-        segments = slice_segements_ids,
-    ))
+    merged_segments.append(
+        SegmentsBoundsMerge(
+            start=curr_start,
+            end=curr_end,
+            segments=slice_segements_ids,
+        )
+    )
 
     return merged_segments

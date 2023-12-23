@@ -9,9 +9,11 @@ from typing import Any, Literal, overload
 import ctranslate2
 import pybind11_builtins as __pybind11_builtins
 
+from whisperx.types import ComputeType, DeviceType
+
 # functions
 
-def contains_model(path): # real signature unknown; restored from __doc__
+def contains_model(path):  # real signature unknown; restored from __doc__
     """
     contains_model(path: str) -> bool
 
@@ -19,7 +21,7 @@ def contains_model(path): # real signature unknown; restored from __doc__
     """
     return False
 
-def get_cuda_device_count(): # real signature unknown; restored from __doc__
+def get_cuda_device_count():  # real signature unknown; restored from __doc__
     """
     get_cuda_device_count() -> int
 
@@ -27,11 +29,13 @@ def get_cuda_device_count(): # real signature unknown; restored from __doc__
     """
     return 0
 
-def get_log_level(): # real signature unknown; restored from __doc__
-    """ get_log_level() -> ctranslate2._ext.LogLevel """
+def get_log_level():  # real signature unknown; restored from __doc__
+    """get_log_level() -> ctranslate2._ext.LogLevel"""
     pass
 
-def get_supported_compute_types(device, device_index=0): # real signature unknown; restored from __doc__
+def get_supported_compute_types(
+    device: DeviceType, device_index: int = 0
+) -> set[ComputeType]:  # real signature unknown; restored from __doc__
     """
     get_supported_compute_types(device: str, device_index: int = 0) -> Set[str]
 
@@ -50,11 +54,11 @@ def get_supported_compute_types(device, device_index=0): # real signature unknow
     """
     pass
 
-def set_log_level(arg0): # real signature unknown; restored from __doc__
-    """ set_log_level(arg0: ctranslate2._ext.LogLevel) -> None """
+def set_log_level(arg0):  # real signature unknown; restored from __doc__
+    """set_log_level(arg0: ctranslate2._ext.LogLevel) -> None"""
     pass
 
-def set_random_seed(seed): # real signature unknown; restored from __doc__
+def set_random_seed(seed):  # real signature unknown; restored from __doc__
     """
     set_random_seed(seed: int) -> None
 
@@ -65,8 +69,8 @@ def set_random_seed(seed): # real signature unknown; restored from __doc__
 # classes
 
 class AsyncGenerationResult(__pybind11_builtins.pybind11_object):
-    """ Asynchronous wrapper around a result object. """
-    def done(self): # real signature unknown; restored from __doc__
+    """Asynchronous wrapper around a result object."""
+    def done(self):  # real signature unknown; restored from __doc__
         """
         done(self: ctranslate2._ext.AsyncGenerationResult) -> bool
 
@@ -74,7 +78,7 @@ class AsyncGenerationResult(__pybind11_builtins.pybind11_object):
         """
         return False
 
-    def result(self): # real signature unknown; restored from __doc__
+    def result(self):  # real signature unknown; restored from __doc__
         """
         result(self: ctranslate2._ext.AsyncGenerationResult) -> ctranslate2._ext.GenerationResult
 
@@ -86,13 +90,12 @@ class AsyncGenerationResult(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, *args, **kwargs): # real signature unknown
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-
 class AsyncScoringResult(__pybind11_builtins.pybind11_object):
-    """ Asynchronous wrapper around a result object. """
-    def done(self): # real signature unknown; restored from __doc__
+    """Asynchronous wrapper around a result object."""
+    def done(self):  # real signature unknown; restored from __doc__
         """
         done(self: ctranslate2._ext.AsyncScoringResult) -> bool
 
@@ -100,7 +103,7 @@ class AsyncScoringResult(__pybind11_builtins.pybind11_object):
         """
         return False
 
-    def result(self): # real signature unknown; restored from __doc__
+    def result(self):  # real signature unknown; restored from __doc__
         """
         result(self: ctranslate2._ext.AsyncScoringResult) -> ctranslate2._ext.ScoringResult
 
@@ -112,13 +115,12 @@ class AsyncScoringResult(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, *args, **kwargs): # real signature unknown
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-
 class AsyncTranslationResult(__pybind11_builtins.pybind11_object):
-    """ Asynchronous wrapper around a result object. """
-    def done(self): # real signature unknown; restored from __doc__
+    """Asynchronous wrapper around a result object."""
+    def done(self):  # real signature unknown; restored from __doc__
         """
         done(self: ctranslate2._ext.AsyncTranslationResult) -> bool
 
@@ -126,7 +128,7 @@ class AsyncTranslationResult(__pybind11_builtins.pybind11_object):
         """
         return False
 
-    def result(self): # real signature unknown; restored from __doc__
+    def result(self):  # real signature unknown; restored from __doc__
         """
         result(self: ctranslate2._ext.AsyncTranslationResult) -> ctranslate2._ext.TranslationResult
 
@@ -138,100 +140,101 @@ class AsyncTranslationResult(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, *args, **kwargs): # real signature unknown
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
-
 
 class DataType(__pybind11_builtins.pybind11_object):
     # no doc
-    def __eq__(self, other): # real signature unknown; restored from __doc__
-        """ __eq__(self: object, other: object) -> bool """
+    def __eq__(self, other):  # real signature unknown; restored from __doc__
+        """__eq__(self: object, other: object) -> bool"""
         return False
 
-    def __getstate__(self): # real signature unknown; restored from __doc__
-        """ __getstate__(self: object) -> int """
+    def __getstate__(self):  # real signature unknown; restored from __doc__
+        """__getstate__(self: object) -> int"""
         return 0
 
-    def __hash__(self): # real signature unknown; restored from __doc__
-        """ __hash__(self: object) -> int """
+    def __hash__(self):  # real signature unknown; restored from __doc__
+        """__hash__(self: object) -> int"""
         return 0
 
-    def __index__(self): # real signature unknown; restored from __doc__
-        """ __index__(self: ctranslate2._ext.DataType) -> int """
+    def __index__(self):  # real signature unknown; restored from __doc__
+        """__index__(self: ctranslate2._ext.DataType) -> int"""
         return 0
 
-    def __init__(self, value): # real signature unknown; restored from __doc__
-        """ __init__(self: ctranslate2._ext.DataType, value: int) -> None """
+    def __init__(self, value):  # real signature unknown; restored from __doc__
+        """__init__(self: ctranslate2._ext.DataType, value: int) -> None"""
         pass
 
-    def __int__(self): # real signature unknown; restored from __doc__
-        """ __int__(self: ctranslate2._ext.DataType) -> int """
+    def __int__(self):  # real signature unknown; restored from __doc__
+        """__int__(self: ctranslate2._ext.DataType) -> int"""
         return 0
 
-    def __ne__(self, other): # real signature unknown; restored from __doc__
-        """ __ne__(self: object, other: object) -> bool """
+    def __ne__(self, other):  # real signature unknown; restored from __doc__
+        """__ne__(self: object, other: object) -> bool"""
         return False
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: object) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: object) -> str"""
         return ""
 
-    def __setstate__(self, state): # real signature unknown; restored from __doc__
-        """ __setstate__(self: ctranslate2._ext.DataType, state: int) -> None """
+    def __setstate__(self, state):  # real signature unknown; restored from __doc__
+        """__setstate__(self: ctranslate2._ext.DataType, state: int) -> None"""
         pass
 
-    def __str__(self, *args, **kwargs): # real signature unknown
-        """ name(self: handle) -> str """
+    def __str__(self, *args, **kwargs):  # real signature unknown
+        """name(self: handle) -> str"""
         pass
 
-    name = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    name = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """name(self: handle) -> str
 """
 
-    value = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    value = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
 
-
-    bfloat16 = None # (!) real value is '<DataType.bfloat16: 5>'
-    float16 = None # (!) real value is '<DataType.float16: 4>'
-    float32 = None # (!) real value is '<DataType.float32: 0>'
-    int16 = None # (!) real value is '<DataType.int16: 2>'
-    int32 = None # (!) real value is '<DataType.int32: 3>'
-    int8 = None # (!) real value is '<DataType.int8: 1>'
+    bfloat16 = None  # (!) real value is '<DataType.bfloat16: 5>'
+    float16 = None  # (!) real value is '<DataType.float16: 4>'
+    float32 = None  # (!) real value is '<DataType.float32: 0>'
+    int16 = None  # (!) real value is '<DataType.int16: 2>'
+    int32 = None  # (!) real value is '<DataType.int32: 3>'
+    int8 = None  # (!) real value is '<DataType.int8: 1>'
     __entries = {
-        'bfloat16': (
-            None, # (!) real value is '<DataType.bfloat16: 5>'
+        "bfloat16": (
+            None,  # (!) real value is '<DataType.bfloat16: 5>'
             None,
         ),
-        'float16': (
-            None, # (!) real value is '<DataType.float16: 4>'
+        "float16": (
+            None,  # (!) real value is '<DataType.float16: 4>'
             None,
         ),
-        'float32': (
-            None, # (!) real value is '<DataType.float32: 0>'
+        "float32": (
+            None,  # (!) real value is '<DataType.float32: 0>'
             None,
         ),
-        'int16': (
-            None, # (!) real value is '<DataType.int16: 2>'
+        "int16": (
+            None,  # (!) real value is '<DataType.int16: 2>'
             None,
         ),
-        'int32': (
-            None, # (!) real value is '<DataType.int32: 3>'
+        "int32": (
+            None,  # (!) real value is '<DataType.int32: 3>'
             None,
         ),
-        'int8': (
-            None, # (!) real value is '<DataType.int8: 1>'
+        "int8": (
+            None,  # (!) real value is '<DataType.int8: 1>'
             None,
         ),
     }
     __members__ = {
-        'bfloat16': None, # (!) real value is '<DataType.bfloat16: 5>'
-        'float16': None, # (!) real value is '<DataType.float16: 4>'
-        'float32': None, # (!) real value is '<DataType.float32: 0>'
-        'int16': None, # (!) real value is '<DataType.int16: 2>'
-        'int32': None, # (!) real value is '<DataType.int32: 3>'
-        'int8': None, # (!) real value is '<DataType.int8: 1>'
+        "bfloat16": None,  # (!) real value is '<DataType.bfloat16: 5>'
+        "float16": None,  # (!) real value is '<DataType.float16: 4>'
+        "float32": None,  # (!) real value is '<DataType.float32: 0>'
+        "int16": None,  # (!) real value is '<DataType.int16: 2>'
+        "int32": None,  # (!) real value is '<DataType.int32: 3>'
+        "int8": None,  # (!) real value is '<DataType.int8: 1>'
     }
-
 
 class Encoder(__pybind11_builtins.pybind11_object):
     """
@@ -242,7 +245,9 @@ class Encoder(__pybind11_builtins.pybind11_object):
                     >>> encoder = ctranslate2.Encoder("model/", device="cpu")
                     >>> encoder.forward_batch([["▁Hello", "▁world", "!"]])
     """
-    def forward_batch(self, inputs, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def forward_batch(
+        self, inputs, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         forward_batch(self: ctranslate2._ext.Encoder, inputs: Union[List[List[str]], List[List[int]], ctranslate2._ext.StorageView], lengths: Optional[ctranslate2._ext.StorageView] = None, token_type_ids: Optional[List[List[int]]] = None) -> ctranslate2._ext.EncoderForwardOutput
 
@@ -263,7 +268,9 @@ class Encoder(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, model_path, device='cpu', *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def __init__(
+        self, model_path, device="cpu", *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Encoder, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
 
@@ -288,114 +295,146 @@ class Encoder(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    compute_type = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    compute_type = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Computation type used by the model."""
 
-    device = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Device this encoder is running on."""
 
-    device_index = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device_index = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """List of device IDs where this encoder is running on."""
 
-    num_active_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_active_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed or currently processed."""
 
-    num_encoders = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_encoders = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of encoders backing this instance."""
 
-    num_queued_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_queued_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed."""
 
-
-
 class EncoderForwardOutput(__pybind11_builtins.pybind11_object):
-    """ Forward output of an encoder model. """
-    def __init__(self, *args, **kwargs): # real signature unknown
+    """Forward output of an encoder model."""
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.EncoderForwardOutput) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.EncoderForwardOutput) -> str"""
         return ""
 
-    last_hidden_state = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    last_hidden_state = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Output of the last layer."""
 
-    pooler_output = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    pooler_output = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Output of the pooling layer."""
 
-
-
 class ExecutionStats(__pybind11_builtins.pybind11_object):
-    """ A structure containing some execution statistics. """
-    def __init__(self, *args, **kwargs): # real signature unknown
+    """A structure containing some execution statistics."""
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.ExecutionStats) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.ExecutionStats) -> str"""
         return ""
 
-    num_examples = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_examples = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of processed examples."""
 
-    num_tokens = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_tokens = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of output tokens."""
 
-    total_time_in_ms = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    total_time_in_ms = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Total processing time in milliseconds."""
 
-
-
 class GenerationResult(__pybind11_builtins.pybind11_object):
-    """ A generation result. """
-    def __init__(self, *args, **kwargs): # real signature unknown
+    """A generation result."""
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.GenerationResult) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.GenerationResult) -> str"""
         return ""
 
-    scores = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    scores = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Score of each sequence (empty if :obj:`return_scores` was disabled)."""
 
-    sequences = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    sequences = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Generated sequences of tokens."""
 
-    sequences_ids = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    sequences_ids = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Generated sequences of token IDs."""
 
-
-
 class GenerationStepResult(__pybind11_builtins.pybind11_object):
-    """ The result for a single generation step. """
-    def __init__(self, *args, **kwargs): # real signature unknown
+    """The result for a single generation step."""
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.GenerationStepResult) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.GenerationStepResult) -> str"""
         return ""
 
-    batch_id = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    batch_id = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """The batch index."""
 
-    hypothesis_id = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    hypothesis_id = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Index of the hypothesis in the batch."""
 
-    is_last = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    is_last = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Whether this step is the last decoding step for this batch."""
 
-    log_prob = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    log_prob = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Log probability of the token (``None`` if :obj:`return_log_prob` was disabled)."""
 
-    step = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    step = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """The decoding step."""
 
-    token = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    token = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """String value of the generated token."""
 
-    token_id = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    token_id = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """ID of the generated token."""
-
-
 
 class Generator(__pybind11_builtins.pybind11_object):
     """
@@ -406,7 +445,26 @@ class Generator(__pybind11_builtins.pybind11_object):
                     >>> generator = ctranslate2.Generator("model/", device="cpu")
                     >>> generator.generate_batch([["<s>"]], max_length=50, sampling_topk=20)
     """
-    def async_generate_tokens(generator, prompt, max_batch_size=0, batch_type=None, *, max_length=512, min_length=0, sampling_topk=1, sampling_topp=1, sampling_temperature=1, return_log_prob=False, repetition_penalty=1, no_repeat_ngram_size=0, disable_unk=False, suppress_sequences=None, end_token=None, static_prompt=None, cache_static_prompt=True): # reliably restored by inspect
+    def async_generate_tokens(
+        generator,
+        prompt,
+        max_batch_size=0,
+        batch_type=None,
+        *,
+        max_length=512,
+        min_length=0,
+        sampling_topk=1,
+        sampling_topp=1,
+        sampling_temperature=1,
+        return_log_prob=False,
+        repetition_penalty=1,
+        no_repeat_ngram_size=0,
+        disable_unk=False,
+        suppress_sequences=None,
+        end_token=None,
+        static_prompt=None,
+        cache_static_prompt=True,
+    ):  # reliably restored by inspect
         """
         Yields tokens asynchronously as they are generated by the model.
 
@@ -442,7 +500,9 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def forward_batch(self, inputs, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def forward_batch(
+        self, inputs, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         forward_batch(self: ctranslate2._ext.Generator, inputs: Union[List[List[str]], List[List[int]], ctranslate2._ext.StorageView], lengths: Optional[ctranslate2._ext.StorageView] = None, *, return_log_probs: bool = False) -> ctranslate2._ext.StorageView
 
@@ -464,7 +524,9 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def generate_batch(self, start_tokens, List=None, p_str=None, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def generate_batch(
+        self, start_tokens, List=None, p_str=None, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         generate_batch(self: ctranslate2._ext.Generator, start_tokens: List[List[str]], *, max_batch_size: int = 0, batch_type: str = 'examples', asynchronous: bool = False, beam_size: int = 1, patience: float = 1, num_hypotheses: int = 1, length_penalty: float = 1, repetition_penalty: float = 1, no_repeat_ngram_size: int = 0, disable_unk: bool = False, suppress_sequences: Optional[List[List[str]]] = None, end_token: Optional[Union[str, List[str], List[int]]] = None, return_end_token: bool = False, max_length: int = 512, min_length: int = 0, static_prompt: Optional[List[str]] = None, cache_static_prompt: bool = True, include_prompt_in_result: bool = True, return_scores: bool = False, return_alternatives: bool = False, min_alternative_expansion_prob: float = 0, sampling_topk: int = 1, sampling_topp: float = 1, sampling_temperature: float = 1, callback: Callable[[ctranslate2._ext.GenerationStepResult], bool] = None) -> Union[List[ctranslate2._ext.GenerationResult], List[ctranslate2._ext.AsyncGenerationResult]]
 
@@ -536,7 +598,9 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def generate_iterable(generator, start_tokens, max_batch_size=32, batch_type=None, **kwargs): # reliably restored by inspect
+    def generate_iterable(
+        generator, start_tokens, max_batch_size=32, batch_type=None, **kwargs
+    ):  # reliably restored by inspect
         """
         Generates from an iterable of tokenized prompts.
 
@@ -561,7 +625,26 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def generate_tokens(generator, prompt, max_batch_size=0, batch_type=None, *, max_length=512, min_length=0, sampling_topk=1, sampling_topp=1, sampling_temperature=1, return_log_prob=False, repetition_penalty=1, no_repeat_ngram_size=0, disable_unk=False, suppress_sequences=None, end_token=None, static_prompt=None, cache_static_prompt=True): # reliably restored by inspect
+    def generate_tokens(
+        generator,
+        prompt,
+        max_batch_size=0,
+        batch_type=None,
+        *,
+        max_length=512,
+        min_length=0,
+        sampling_topk=1,
+        sampling_topp=1,
+        sampling_temperature=1,
+        return_log_prob=False,
+        repetition_penalty=1,
+        no_repeat_ngram_size=0,
+        disable_unk=False,
+        suppress_sequences=None,
+        end_token=None,
+        static_prompt=None,
+        cache_static_prompt=True,
+    ):  # reliably restored by inspect
         """
         Yields tokens as they are generated by the model.
 
@@ -597,7 +680,9 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def score_batch(self, tokens, List=None, p_str=None, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def score_batch(
+        self, tokens, List=None, p_str=None, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         score_batch(self: ctranslate2._ext.Generator, tokens: List[List[str]], *, max_batch_size: int = 0, batch_type: str = 'examples', max_input_length: int = 1024, asynchronous: bool = False) -> Union[List[ctranslate2._ext.ScoringResult], List[ctranslate2._ext.AsyncScoringResult]]
 
@@ -620,7 +705,9 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def score_iterable(generator, tokens, max_batch_size=64, batch_type=None, **kwargs): # reliably restored by inspect
+    def score_iterable(
+        generator, tokens, max_batch_size=64, batch_type=None, **kwargs
+    ):  # reliably restored by inspect
         """
         Scores an iterable of tokenized examples.
 
@@ -645,7 +732,9 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, model_path, device='cpu', *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def __init__(
+        self, model_path, device="cpu", *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Generator, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
 
@@ -670,139 +759,153 @@ class Generator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    compute_type = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    compute_type = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Computation type used by the model."""
 
-    device = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Device this generator is running on."""
 
-    device_index = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device_index = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """List of device IDs where this generator is running on."""
 
-    num_active_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_active_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed or currently processed."""
 
-    num_generators = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_generators = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of generators backing this instance."""
 
-    num_queued_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_queued_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed."""
-
-
 
 class LogLevel(__pybind11_builtins.pybind11_object):
     # no doc
-    def __eq__(self, other): # real signature unknown; restored from __doc__
-        """ __eq__(self: object, other: object) -> bool """
+    def __eq__(self, other):  # real signature unknown; restored from __doc__
+        """__eq__(self: object, other: object) -> bool"""
         return False
 
-    def __getstate__(self): # real signature unknown; restored from __doc__
-        """ __getstate__(self: object) -> int """
+    def __getstate__(self):  # real signature unknown; restored from __doc__
+        """__getstate__(self: object) -> int"""
         return 0
 
-    def __hash__(self): # real signature unknown; restored from __doc__
-        """ __hash__(self: object) -> int """
+    def __hash__(self):  # real signature unknown; restored from __doc__
+        """__hash__(self: object) -> int"""
         return 0
 
-    def __index__(self): # real signature unknown; restored from __doc__
-        """ __index__(self: ctranslate2._ext.LogLevel) -> int """
+    def __index__(self):  # real signature unknown; restored from __doc__
+        """__index__(self: ctranslate2._ext.LogLevel) -> int"""
         return 0
 
-    def __init__(self, value): # real signature unknown; restored from __doc__
-        """ __init__(self: ctranslate2._ext.LogLevel, value: int) -> None """
+    def __init__(self, value):  # real signature unknown; restored from __doc__
+        """__init__(self: ctranslate2._ext.LogLevel, value: int) -> None"""
         pass
 
-    def __int__(self): # real signature unknown; restored from __doc__
-        """ __int__(self: ctranslate2._ext.LogLevel) -> int """
+    def __int__(self):  # real signature unknown; restored from __doc__
+        """__int__(self: ctranslate2._ext.LogLevel) -> int"""
         return 0
 
-    def __ne__(self, other): # real signature unknown; restored from __doc__
-        """ __ne__(self: object, other: object) -> bool """
+    def __ne__(self, other):  # real signature unknown; restored from __doc__
+        """__ne__(self: object, other: object) -> bool"""
         return False
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: object) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: object) -> str"""
         return ""
 
-    def __setstate__(self, state): # real signature unknown; restored from __doc__
-        """ __setstate__(self: ctranslate2._ext.LogLevel, state: int) -> None """
+    def __setstate__(self, state):  # real signature unknown; restored from __doc__
+        """__setstate__(self: ctranslate2._ext.LogLevel, state: int) -> None"""
         pass
 
-    def __str__(self, *args, **kwargs): # real signature unknown
-        """ name(self: handle) -> str """
+    def __str__(self, *args, **kwargs):  # real signature unknown
+        """name(self: handle) -> str"""
         pass
 
-    name = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    name = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """name(self: handle) -> str
 """
 
-    value = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    value = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
 
-
-    Critical = None # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
-    Debug = None # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
-    Error = None # (!) forward: Error, real value is '<LogLevel.Error: -1>'
-    Info = None # (!) forward: Info, real value is '<LogLevel.Info: 1>'
-    Off = None # (!) forward: Off, real value is '<LogLevel.Off: -3>'
-    Trace = None # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
-    Warning = None # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
+    Critical = None  # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
+    Debug = None  # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
+    Error = None  # (!) forward: Error, real value is '<LogLevel.Error: -1>'
+    Info = None  # (!) forward: Info, real value is '<LogLevel.Info: 1>'
+    Off = None  # (!) forward: Off, real value is '<LogLevel.Off: -3>'
+    Trace = None  # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
+    Warning = None  # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
     __entries = {
-        'Critical': (
-            None, # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
+        "Critical": (
+            None,  # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
             None,
         ),
-        'Debug': (
-            None, # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
+        "Debug": (
+            None,  # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
             None,
         ),
-        'Error': (
-            None, # (!) forward: Error, real value is '<LogLevel.Error: -1>'
+        "Error": (
+            None,  # (!) forward: Error, real value is '<LogLevel.Error: -1>'
             None,
         ),
-        'Info': (
-            None, # (!) forward: Info, real value is '<LogLevel.Info: 1>'
+        "Info": (
+            None,  # (!) forward: Info, real value is '<LogLevel.Info: 1>'
             None,
         ),
-        'Off': (
-            None, # (!) forward: Off, real value is '<LogLevel.Off: -3>'
+        "Off": (
+            None,  # (!) forward: Off, real value is '<LogLevel.Off: -3>'
             None,
         ),
-        'Trace': (
-            None, # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
+        "Trace": (
+            None,  # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
             None,
         ),
-        'Warning': (
-            None, # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
+        "Warning": (
+            None,  # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
             None,
         ),
     }
     __members__ = {
-        'Critical': None, # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
-        'Debug': None, # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
-        'Error': None, # (!) forward: Error, real value is '<LogLevel.Error: -1>'
-        'Info': None, # (!) forward: Info, real value is '<LogLevel.Info: 1>'
-        'Off': None, # (!) forward: Off, real value is '<LogLevel.Off: -3>'
-        'Trace': None, # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
-        'Warning': None, # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
+        "Critical": None,  # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
+        "Debug": None,  # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
+        "Error": None,  # (!) forward: Error, real value is '<LogLevel.Error: -1>'
+        "Info": None,  # (!) forward: Info, real value is '<LogLevel.Info: 1>'
+        "Off": None,  # (!) forward: Off, real value is '<LogLevel.Off: -3>'
+        "Trace": None,  # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
+        "Warning": None,  # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
     }
 
-
 class ScoringResult(__pybind11_builtins.pybind11_object):
-    """ A scoring result. """
-    def __init__(self, *args, **kwargs): # real signature unknown
+    """A scoring result."""
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.ScoringResult) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.ScoringResult) -> str"""
         return ""
 
-    log_probs = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    log_probs = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Log probability of each token"""
 
-    tokens = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    tokens = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """The scored tokens."""
-
-
 
 class StorageView(__pybind11_builtins.pybind11_object):
     """
@@ -830,7 +933,7 @@ class StorageView(__pybind11_builtins.pybind11_object):
                     [cuda:0 int32 storage viewed as 2x4]
                     >>> z = torch.as_tensor(y, device="cuda")
     """
-    def from_array(self, array): # real signature unknown; restored from __doc__
+    def from_array(self, array):  # real signature unknown; restored from __doc__
         """
         from_array(array: object) -> ctranslate2._ext.StorageView
 
@@ -850,7 +953,7 @@ class StorageView(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def to(self, dtype): # real signature unknown; restored from __doc__
+    def to(self, dtype):  # real signature unknown; restored from __doc__
         """
         to(self: ctranslate2._ext.StorageView, dtype: ctranslate2._ext.DataType) -> ctranslate2._ext.StorageView
 
@@ -865,58 +968,72 @@ class StorageView(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, *args, **kwargs): # real signature unknown
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __str__(self): # real signature unknown; restored from __doc__
-        """ __str__(self: ctranslate2._ext.StorageView) -> str """
+    def __str__(self):  # real signature unknown; restored from __doc__
+        """__str__(self: ctranslate2._ext.StorageView) -> str"""
         return ""
 
-    device = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Device where the storage is allocated ("cpu" or "cuda")."""
 
-    device_index = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device_index = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Device index."""
 
-    dtype = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    dtype = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Data type used by the storage."""
 
-    shape = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    shape = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Shape of the storage view."""
 
-    __array_interface__ = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    __array_interface__ = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
 
-    __cuda_array_interface__ = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
-
-
+    __cuda_array_interface__ = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
 
 class TranslationResult(__pybind11_builtins.pybind11_object):
-    """ A translation result. """
-    def __getitem__(self, arg0): # real signature unknown; restored from __doc__
-        """ __getitem__(self: ctranslate2._ext.TranslationResult, arg0: int) -> dict """
+    """A translation result."""
+    def __getitem__(self, arg0):  # real signature unknown; restored from __doc__
+        """__getitem__(self: ctranslate2._ext.TranslationResult, arg0: int) -> dict"""
         return {}
 
-    def __init__(self, *args, **kwargs): # real signature unknown
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __len__(self): # real signature unknown; restored from __doc__
-        """ __len__(self: ctranslate2._ext.TranslationResult) -> int """
+    def __len__(self):  # real signature unknown; restored from __doc__
+        """__len__(self: ctranslate2._ext.TranslationResult) -> int"""
         return 0
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.TranslationResult) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.TranslationResult) -> str"""
         return ""
 
-    attention = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    attention = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Attention matrix of each translation hypothesis (empty if :obj:`return_attention` was disabled)."""
 
-    hypotheses = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    hypotheses = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Translation hypotheses."""
 
-    scores = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    scores = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Score of each translation hypothesis (empty if :obj:`return_scores` was disabled)."""
-
-
 
 class Translator(__pybind11_builtins.pybind11_object):
     """
@@ -927,7 +1044,25 @@ class Translator(__pybind11_builtins.pybind11_object):
                     >>> translator = ctranslate2.Translator("model/", device="cpu")
                     >>> translator.translate_batch([["▁Hello", "▁world", "!"]])
     """
-    def generate_tokens(translator, source, target_prefix=None, *, max_decoding_length=256, min_decoding_length=1, sampling_topk=1, sampling_topp=1, sampling_temperature=1, return_log_prob=False, repetition_penalty=1, no_repeat_ngram_size=0, disable_unk=False, suppress_sequences=None, end_token=None, max_input_length=1024, use_vmap=False): # reliably restored by inspect
+    def generate_tokens(
+        translator,
+        source,
+        target_prefix=None,
+        *,
+        max_decoding_length=256,
+        min_decoding_length=1,
+        sampling_topk=1,
+        sampling_topp=1,
+        sampling_temperature=1,
+        return_log_prob=False,
+        repetition_penalty=1,
+        no_repeat_ngram_size=0,
+        disable_unk=False,
+        suppress_sequences=None,
+        end_token=None,
+        max_input_length=1024,
+        use_vmap=False,
+    ):  # reliably restored by inspect
         """
         Yields tokens as they are generated by the model.
 
@@ -958,7 +1093,7 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def load_model(self): # real signature unknown; restored from __doc__
+    def load_model(self):  # real signature unknown; restored from __doc__
         """
         load_model(self: ctranslate2._ext.Translator) -> None
 
@@ -966,7 +1101,9 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def score_batch(self, source, List=None, p_str=None, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def score_batch(
+        self, source, List=None, p_str=None, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         score_batch(self: ctranslate2._ext.Translator, source: List[List[str]], target: List[List[str]], *, max_batch_size: int = 0, batch_type: str = 'examples', max_input_length: int = 1024, asynchronous: bool = False) -> Union[List[ctranslate2._ext.ScoringResult], List[ctranslate2._ext.AsyncScoringResult]]
 
@@ -989,7 +1126,9 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def score_file(self, source_path, target_path, output_path, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def score_file(
+        self, source_path, target_path, output_path, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         score_file(self: ctranslate2._ext.Translator, source_path: str, target_path: str, output_path: str, *, max_batch_size: int = 32, read_batch_size: int = 0, batch_type: str = 'examples', max_input_length: int = 1024, with_tokens_score: bool = False, source_tokenize_fn: Callable[[str], List[str]] = None, target_tokenize_fn: Callable[[str], List[str]] = None, target_detokenize_fn: Callable[[List[str]], str] = None) -> ctranslate2._ext.ExecutionStats
 
@@ -1026,7 +1165,9 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def score_iterable(translator, source, target, max_batch_size=64, batch_type=None, **kwargs): # reliably restored by inspect
+    def score_iterable(
+        translator, source, target, max_batch_size=64, batch_type=None, **kwargs
+    ):  # reliably restored by inspect
         """
         Scores an iterable of tokenized examples.
 
@@ -1052,7 +1193,9 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def translate_batch(self, source, List=None, p_str=None, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def translate_batch(
+        self, source, List=None, p_str=None, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         translate_batch(self: ctranslate2._ext.Translator, source: List[List[str]], target_prefix: Optional[List[Optional[List[str]]]] = None, *, max_batch_size: int = 0, batch_type: str = 'examples', asynchronous: bool = False, beam_size: int = 2, patience: float = 1, num_hypotheses: int = 1, length_penalty: float = 1, coverage_penalty: float = 0, repetition_penalty: float = 1, no_repeat_ngram_size: int = 0, disable_unk: bool = False, suppress_sequences: Optional[List[List[str]]] = None, end_token: Optional[Union[str, List[str], List[int]]] = None, return_end_token: bool = False, prefix_bias_beta: float = 0, max_input_length: int = 1024, max_decoding_length: int = 256, min_decoding_length: int = 1, use_vmap: bool = False, return_scores: bool = False, return_attention: bool = False, return_alternatives: bool = False, min_alternative_expansion_prob: float = 0, sampling_topk: int = 1, sampling_topp: float = 1, sampling_temperature: float = 1, replace_unknowns: bool = False, callback: Callable[[ctranslate2._ext.GenerationStepResult], bool] = None) -> Union[List[ctranslate2._ext.TranslationResult], List[ctranslate2._ext.AsyncTranslationResult]]
 
@@ -1109,7 +1252,9 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def translate_file(self, source_path, output_path, target_path, p_str=None, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def translate_file(
+        self, source_path, output_path, target_path, p_str=None, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         translate_file(self: ctranslate2._ext.Translator, source_path: str, output_path: str, target_path: Optional[str] = None, *, max_batch_size: int = 32, read_batch_size: int = 0, batch_type: str = 'examples', beam_size: int = 2, patience: float = 1, num_hypotheses: int = 1, length_penalty: float = 1, coverage_penalty: float = 0, repetition_penalty: float = 1, no_repeat_ngram_size: int = 0, disable_unk: bool = False, suppress_sequences: Optional[List[List[str]]] = None, end_token: Optional[Union[str, List[str], List[int]]] = None, prefix_bias_beta: float = 0, max_input_length: int = 1024, max_decoding_length: int = 256, min_decoding_length: int = 1, use_vmap: bool = False, with_scores: bool = False, sampling_topk: int = 1, sampling_topp: float = 1, sampling_temperature: float = 1, replace_unknowns: bool = False, source_tokenize_fn: Callable[[str], List[str]] = None, target_tokenize_fn: Callable[[str], List[str]] = None, target_detokenize_fn: Callable[[List[str]], str] = None) -> ctranslate2._ext.ExecutionStats
 
@@ -1164,7 +1309,14 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def translate_iterable(translator, source, target_prefix=None, max_batch_size=32, batch_type=None, **kwargs): # reliably restored by inspect
+    def translate_iterable(
+        translator,
+        source,
+        target_prefix=None,
+        max_batch_size=32,
+        batch_type=None,
+        **kwargs,
+    ):  # reliably restored by inspect
         """
         Translates an iterable of tokenized examples.
 
@@ -1208,7 +1360,9 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def unload_model(self, to_cpu=False): # real signature unknown; restored from __doc__
+    def unload_model(
+        self, to_cpu=False
+    ):  # real signature unknown; restored from __doc__
         """
         unload_model(self: ctranslate2._ext.Translator, to_cpu: bool = False) -> None
 
@@ -1222,7 +1376,9 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, model_path, device='cpu', *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def __init__(
+        self, model_path, device="cpu", *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Translator, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
 
@@ -1247,37 +1403,51 @@ class Translator(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    compute_type = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    compute_type = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Computation type used by the model."""
 
-    device = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Device this translator is running on."""
 
-    device_index = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device_index = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """List of device IDs where this translator is running on."""
 
-    model_is_loaded = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    model_is_loaded = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Whether the model is loaded on the initial device and ready to be used."""
 
-    num_active_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_active_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed or currently processed."""
 
-    num_queued_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_queued_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed."""
 
-    num_translators = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_translators = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of translators backing this instance."""
 
-
-
-class Whisper(__pybind11_builtins.pybind11_object):
+class Whisper:
     """
     Implements the Whisper speech recognition model published by OpenAI.
 
                 See Also:
                    https://github.com/openai/whisper
     """
-    def align(self, features, start_sequence, p_int=None, *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def align(
+        self, features, start_sequence, p_int=None, *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         align(self: ctranslate2._ext.Whisper, features: ctranslate2._ext.StorageView, start_sequence: List[int], text_tokens: List[List[int]], num_frames: Union[int, List[int]], *, median_filter_width: int = 7) -> List[ctranslate2._ext.WhisperAlignmentResult]
 
@@ -1299,7 +1469,9 @@ class Whisper(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def detect_language(self, features: ctranslate2.StorageView) -> list[list[tuple[str, float]]]: # real signature unknown; restored from __doc__
+    def detect_language(
+        self, features: ctranslate2.StorageView
+    ) -> list[list[tuple[str, float]]]:  # real signature unknown; restored from __doc__
         """
         detect_language(self: ctranslate2._ext.Whisper, features: ctranslate2._ext.StorageView) -> List[List[Tuple[str, float]]]
 
@@ -1322,10 +1494,8 @@ class Whisper(__pybind11_builtins.pybind11_object):
         return []
 
     def encode(
-        self,
-        features: ctranslate2.StorageView,
-        to_cpu: bool = False
-    ) -> ctranslate2.StorageView: # real signature unknown; restored from __doc__
+        self, features: ctranslate2.StorageView, to_cpu: bool = False
+    ) -> ctranslate2.StorageView:  # real signature unknown; restored from __doc__
         """
         encode(self: ctranslate2._ext.Whisper, features: ctranslate2._ext.StorageView, to_cpu: bool = False) -> ctranslate2._ext.StorageView
 
@@ -1362,10 +1532,8 @@ class Whisper(__pybind11_builtins.pybind11_object):
         suppress_blank: bool = True,
         suppress_tokens: list[int] | None = [-1],
         sampling_topk: int = 1,
-        sampling_temperature: float = 1
-    ) -> list[ctranslate2.WhisperGenerationResult]:
-        ...
-
+        sampling_temperature: float = 1,
+    ) -> list[ctranslate2.WhisperGenerationResult]: ...
     @overload
     def generate(
         self,
@@ -1386,10 +1554,8 @@ class Whisper(__pybind11_builtins.pybind11_object):
         suppress_blank: bool = True,
         suppress_tokens: list[int] | None = [-1],
         sampling_topk: int = 1,
-        sampling_temperature: float = 1
-    ) -> list[ctranslate2.WhisperGenerationResultAsync]:
-        ...
-
+        sampling_temperature: float = 1,
+    ) -> list[ctranslate2.WhisperGenerationResultAsync]: ...
     def generate(
         self,
         features: ctranslate2.StorageView,
@@ -1409,8 +1575,11 @@ class Whisper(__pybind11_builtins.pybind11_object):
         suppress_blank: bool = True,
         suppress_tokens: list[int] | None = [-1],
         sampling_topk: int = 1,
-        sampling_temperature: float = 1
-    ) -> list[ctranslate2.WhisperGenerationResult] | list[ctranslate2.WhisperGenerationResultAsync]:
+        sampling_temperature: float = 1,
+    ) -> (
+        list[ctranslate2.WhisperGenerationResult]
+        | list[ctranslate2.WhisperGenerationResultAsync]
+    ):
         """
         generate(self: ctranslate2._ext.Whisper, features: ctranslate2._ext.StorageView, prompts: Union[List[List[str]], List[List[int]]], *, asynchronous: bool = False, beam_size: int = 5, patience: float = 1, num_hypotheses: int = 1, length_penalty: float = 1, repetition_penalty: float = 1, no_repeat_ngram_size: int = 0, max_length: int = 448, return_scores: bool = False, return_no_speech_prob: bool = False, max_initial_timestamp_index: int = 50, suppress_blank: bool = True, suppress_tokens: Optional[List[int]] = [-1], sampling_topk: int = 1, sampling_temperature: float = 1) -> Union[List[ctranslate2._ext.WhisperGenerationResult], List[ctranslate2._ext.WhisperGenerationResultAsync]]
 
@@ -1450,7 +1619,9 @@ class Whisper(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, model_path, device='cpu', *args, **kwargs): # real signature unknown; NOTE: unreliably restored from __doc__
+    def __init__(
+        self, model_path, device="cpu", *args, **kwargs
+    ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Whisper, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
 
@@ -1475,72 +1646,92 @@ class Whisper(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    compute_type = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    compute_type = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Computation type used by the model."""
 
-    device = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Device this model is running on."""
 
-    device_index = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    device_index = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """List of device IDs where this model is running on."""
 
-    is_multilingual = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    is_multilingual = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Returns ``True`` if this model is multilingual."""
 
-    num_active_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_active_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed or currently processed."""
 
-    num_queued_batches = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_queued_batches = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of batches waiting to be processed."""
 
-    num_workers = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    num_workers = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Number of model workers backing this instance."""
 
-
-
 class WhisperAlignmentResult(__pybind11_builtins.pybind11_object):
-    """ An alignment result from the Whisper model. """
-    def __init__(self, *args, **kwargs): # real signature unknown
+    """An alignment result from the Whisper model."""
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.WhisperAlignmentResult) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.WhisperAlignmentResult) -> str"""
         return ""
 
-    alignments = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    alignments = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """List of aligned text and time indices."""
 
-    text_token_probs = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    text_token_probs = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Probabilities of text tokens."""
 
-
-
 class WhisperGenerationResult(__pybind11_builtins.pybind11_object):
-    """ A generation result from the Whisper model. """
-    def __init__(self, *args, **kwargs): # real signature unknown
+    """A generation result from the Whisper model."""
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
 
-    def __repr__(self): # real signature unknown; restored from __doc__
-        """ __repr__(self: ctranslate2._ext.WhisperGenerationResult) -> str """
+    def __repr__(self):  # real signature unknown; restored from __doc__
+        """__repr__(self: ctranslate2._ext.WhisperGenerationResult) -> str"""
         return ""
 
-    no_speech_prob = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    no_speech_prob = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Probability of the no speech token (0 if :obj:`return_no_speech_prob` was disabled)."""
 
-    scores = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    scores = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Score of each sequence (empty if :obj:`return_scores` was disabled)."""
 
-    sequences = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    sequences = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Generated sequences of tokens."""
 
-    sequences_ids = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default
+    sequences_ids = property(
+        lambda self: object(), lambda self, v: None, lambda self: None
+    )  # default
     """Generated sequences of token IDs."""
 
-
-
 class WhisperGenerationResultAsync(__pybind11_builtins.pybind11_object):
-    """ Asynchronous wrapper around a result object. """
-    def done(self): # real signature unknown; restored from __doc__
+    """Asynchronous wrapper around a result object."""
+    def done(self):  # real signature unknown; restored from __doc__
         """
         done(self: ctranslate2._ext.WhisperGenerationResultAsync) -> bool
 
@@ -1548,7 +1739,7 @@ class WhisperGenerationResultAsync(__pybind11_builtins.pybind11_object):
         """
         return False
 
-    def result(self): # real signature unknown; restored from __doc__
+    def result(self):  # real signature unknown; restored from __doc__
         """
         result(self: ctranslate2._ext.WhisperGenerationResultAsync) -> ctranslate2._ext.WhisperGenerationResult
 
@@ -1560,26 +1751,25 @@ class WhisperGenerationResultAsync(__pybind11_builtins.pybind11_object):
         """
         pass
 
-    def __init__(self, *args, **kwargs): # real signature unknown
+    def __init__(self, *args, **kwargs):  # real signature unknown
         pass
-
 
 # variables with complex values
 
-Critical = None # (!) real value is '<LogLevel.Critical: -2>'
+Critical = None  # (!) real value is '<LogLevel.Critical: -2>'
 
-Debug = None # (!) real value is '<LogLevel.Debug: 2>'
+Debug = None  # (!) real value is '<LogLevel.Debug: 2>'
 
-Error = None # (!) real value is '<LogLevel.Error: -1>'
+Error = None  # (!) real value is '<LogLevel.Error: -1>'
 
-Info = None # (!) real value is '<LogLevel.Info: 1>'
+Info = None  # (!) real value is '<LogLevel.Info: 1>'
 
-Off = None # (!) real value is '<LogLevel.Off: -3>'
+Off = None  # (!) real value is '<LogLevel.Off: -3>'
 
-Trace = None # (!) real value is '<LogLevel.Trace: 3>'
+Trace = None  # (!) real value is '<LogLevel.Trace: 3>'
 
-Warning = None # (!) real value is '<LogLevel.Warning: 0>'
+Warning = None  # (!) real value is '<LogLevel.Warning: 0>'
 
-__loader__ = None # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x7fc697cccf10>'
+__loader__ = None  # (!) real value is '<_frozen_importlib_external.ExtensionFileLoader object at 0x7fc697cccf10>'
 
-__spec__ = None # (!) real value is "ModuleSpec(name='ctranslate2._ext', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x7fc697cccf10>, origin='/mnt/data/code/Python/Tests/whisperx-test/whisperX/.venv/lib/python3.11/site-packages/ctranslate2/_ext.cpython-311-x86_64-linux-gnu.so')"
+__spec__ = None  # (!) real value is "ModuleSpec(name='ctranslate2._ext', loader=<_frozen_importlib_external.ExtensionFileLoader object at 0x7fc697cccf10>, origin='/mnt/data/code/Python/Tests/whisperx-test/whisperX/.venv/lib/python3.11/site-packages/ctranslate2/_ext.cpython-311-x86_64-linux-gnu.so')"

@@ -47,7 +47,9 @@ class AsrOptions:
     length_penalty: float = field(default=1)
     repetition_penalty: float = field(default=1)
     no_repeat_ngram_size: int = field(default=0)
-    temperatures: list[float] = field(default_factory=lambda: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+    temperatures: list[float] = field(
+        default_factory=lambda: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    )
     log_prob_threshold: float | None = field(default=-1.0)
     no_speech_threshold: float | None = field(default=0.6)
     compression_ratio_threshold: float | None = field(default=2.4)
@@ -75,9 +77,7 @@ class LanguageDetails:
     @classmethod
     def get_defined(cls, for_language: LanguageCode) -> LanguageDetails:
         return cls(
-            language=for_language,
-            language_probability=1,
-            all_language_probs=None
+            language=for_language, language_probability=1, all_language_probs=None
         )
 
 
@@ -100,7 +100,7 @@ def mel_filters(device: torch.device, n_mels: int = N_MELS) -> torch.Tensor:
     ) as handle:
         data: npt.NDArray[Any] = handle[f"mel_{n_mels}"]
 
-        return torch.from_numpy(data).to(device) # pyright: ignore
+        return torch.from_numpy(data).to(device)  # pyright: ignore
 
 
 def log_mel_spectrogram(
@@ -136,7 +136,7 @@ def log_mel_spectrogram(
         if isinstance(audio, str | Path | os.PathLike):
             audio = load_audio(audio)
 
-        audio = torch.from_numpy(audio) # pyright: ignore
+        audio = torch.from_numpy(audio)  # pyright: ignore
 
     if device is not None:
         audio = audio.to(device)
@@ -151,7 +151,7 @@ def log_mel_spectrogram(
     mel_spec = filters @ magnitudes
 
     log_spec = torch.clamp(mel_spec, min=1e-10).log10()
-    log_spec = torch.maximum(log_spec, log_spec.max() - 8.0) # pyright: ignore [reportUnknownMemberType]
+    log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)  # pyright: ignore [reportUnknownMemberType]
     log_spec = (log_spec + 4.0) / 4.0
     return log_spec
 
@@ -170,7 +170,7 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
         self,
         features: AudioData,
         tokenizer: faster_whisper.tokenizer.Tokenizer,
-        options: AsrOptions
+        options: AsrOptions,
     ) -> list[str]:
         batch_size = features.shape[0]
         all_tokens: list[int] = []
@@ -182,7 +182,6 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
                 all_tokens.extend(initial_prompt_tokens)
             else:
                 all_tokens.extend(options.initial_prompt)
-
 
         previous_tokens = all_tokens[prompt_reset_since:]
         prompt = self.get_prompt(
@@ -213,7 +212,7 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
             # text_tokens = [token for token in tokens if token < self.eot]
             return cast(
                 list[str],
-                tokenizer.tokenizer.decode_batch(res) # pyright: ignore [reportUnknownMemberType]
+                tokenizer.tokenizer.decode_batch(res),  # pyright: ignore [reportUnknownMemberType]
             )
 
         text = decode_batch(tokens_batch)
@@ -229,7 +228,7 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
         if len(features.shape) == 2:
             features = np.expand_dims(features, 0)
 
-        features = faster_whisper.transcribe.get_ctranslate2_storage(features) # pyright: ignore [reportUnknownMemberType]
+        features = faster_whisper.transcribe.get_ctranslate2_storage(features)  # pyright: ignore [reportUnknownMemberType]
 
         return self.model.encode(features, to_cpu=to_cpu)
 
@@ -240,7 +239,9 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
             features = Features(
                 log_mel_spectrogram(
                     data[:SAMPLE_RATE],
-                    padding=0 if data.shape[0] >= N_SAMPLES else N_SAMPLES - data.shape[0]
+                    padding=0
+                    if data.shape[0] >= N_SAMPLES
+                    else N_SAMPLES - data.shape[0],
                 )
             )
 
@@ -255,13 +256,12 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
         # Parse language names to strip out markers
         all_language_probs = cast(
             list[tuple[LanguageCode, float]],
-            [(token[2:-2], prob) for (token, prob) in results]
+            [(token[2:-2], prob) for (token, prob) in results],
         )
 
         # Get top language token and probability
         language, language_probability = all_language_probs[0]
 
-        # FIXME: Transition to using a custom logger
         self.logger.info(
             "Detected language '%s' with probability %.2f",
             language,
@@ -271,5 +271,5 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
         return LanguageDetails(
             language=language,
             language_probability=language_probability,
-            all_language_probs=all_language_probs
+            all_language_probs=all_language_probs,
         )

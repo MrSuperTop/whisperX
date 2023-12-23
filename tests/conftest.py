@@ -1,3 +1,1 @@
-pytest_plugins = [
-    'tests.fixtures.dataset'
-]
+pytest_plugins = ["tests.fixtures.dataset", "tests.fixtures.model"]

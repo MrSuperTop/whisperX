@@ -1,29 +1,28 @@
 import logging
 import logging.config
+from pathlib import Path
 
-MAIN_LOGGER_NAME = 'main'
+MAIN_LOGGER_NAME = "whisperx"
 
 
-def setup_loggers() -> logging.Logger:
+def setup_loggers(
+    main_logger_name: str = MAIN_LOGGER_NAME, log_file: Path = Path("./runtime.log")
+) -> logging.Logger:
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
 
-    logger = root.getChild(MAIN_LOGGER_NAME)
+    logger = root.getChild(main_logger_name)
 
-    file_handler = logging.FileHandler(
-        'runtime.log',
-        mode='w',
-        encoding='utf-8'
-    )
+    file_handler = logging.FileHandler(log_file, mode="w", encoding="utf-8")
 
     file_handler.setLevel(logging.DEBUG)
 
     stdout_handler = logging.StreamHandler()
     stdout_handler.setLevel(logging.INFO)
 
-    console_formatter = logging.Formatter('%(message)s')
+    console_formatter = logging.Formatter("%(levelname)s: %(message)s")
     file_formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
     stdout_handler.setFormatter(console_formatter)
@@ -31,6 +30,8 @@ def setup_loggers() -> logging.Logger:
 
     logger.addHandler(file_handler)
     logger.addHandler(stdout_handler)
+
+    logging.getLogger("faster_whisper").setLevel(logging.DEBUG)
 
     return logger
 

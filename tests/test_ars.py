@@ -1,39 +1,34 @@
 from itertools import islice
-from pathlib import Path
 
-import numpy as np
 from jiwer import wer
 
-import datasets
-import whisperx
-from tests.utils.load_dataset import DatasetEntry
-from whisperx.asr.whisper_model import AsrOptions
-
-DOWNLOAD_ROOT = Path('./models')
+from tests.utils.load_dataset import AudioDataset
+from whisperx.alignment import AlignModelWrapper
+from whisperx.asr.faster_whisper_pipeline import FasterWhisperPipeline
 
 
-def test_asr(dataset: datasets.Dataset) -> None:
-    model = whisperx.load_model(
-        'guillaumekln/faster-whisper-medium',
-        compute_type='float32',
-        device='cuda',
-        asr_options=AsrOptions(suppress_numerals=False, beam_size=10),
-        download_root=DOWNLOAD_ROOT,
-    )
+class TestArs:
+    def test_asr(self, dataset: AudioDataset, model: FasterWhisperPipeline) -> None:
+        transcription_results: list[str] = []
+        ground_truth: list[str] = []
 
-    transcription_results: list[str] = []
-    ground_truth: list[str] = []
+        for entry in islice(dataset, 25):
+            result = model.transcribe(entry["audio"]["array"], language="en")
 
-    entry: DatasetEntry
-    for entry in islice(dataset, 250):
-        audio_data = entry['audio']['array'].astype(np.float32)
+            ground_truth.append(entry["sentence"])
 
-        result = model.transcribe(audio_data, language='en')
+            joined_segments = " ".join(
+                [segment.text for segment in result.segments]
+            ).strip()
+            transcription_results.append(joined_segments)
 
-        ground_truth.append(entry['sentence'])
+        error = wer(ground_truth, transcription_results)
+        print(error)
 
-        joined_segments = ' '.join([segment.text for segment in result.segments]).strip()
-        transcription_results.append(joined_segments)
-
-    error = wer(ground_truth, transcription_results)
-    print(error)
+    def test_align(self, dataset: AudioDataset, model: FasterWhisperPipeline) -> None:
+        align_model = AlignModelWrapper.load("en")
+        for entry in islice(dataset, 1):
+            result = model.transcribe(entry["audio"]["array"])
+            print(result)
+            align_result = align_model.align(result.segments, entry["audio"]["array"])
+            print(align_result)
