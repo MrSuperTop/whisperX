@@ -30,10 +30,10 @@ conjunctions_by_language = {
 }
 
 commas_by_language = {
-    'ja': '、', 
+    'ja': '、',
     'zh': '，',
-    'fa': '،', 
-    'ur': '،'  
+    'fa': '،',
+    'ur': '،'
 }
 
 def get_conjunctions(lang_code):

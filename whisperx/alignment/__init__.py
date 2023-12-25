@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import os
 import typing
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Sequence, TypeAlias, cast
 
@@ -19,6 +18,7 @@ import torch
 import torchaudio
 from nltk.tokenize.punkt import PunktParameters, PunktSentenceTokenizer
 from pandas._typing import InterpolateOptions
+from tqdm import tqdm
 from transformers import PreTrainedTokenizer, Wav2Vec2ForCTC, Wav2Vec2Processor
 
 from whisperx.alignment.constants import (
@@ -28,17 +28,26 @@ from whisperx.alignment.constants import (
     PUNKT_ABBREVIATIONS,
     AlignLanguageCode,
 )
-from whisperx.asr.faster_whisper_pipeline import Segment
+from whisperx.alignment.types import (
+    AlignedTranscriptionResult,
+    PreprocessResult,
+    SingleAlignedSegment,
+    SingleCharSegment,
+    SingleWordSegment,
+)
+from whisperx.alignment.utils import backtrack, get_trellis, merge_repeats
+from whisperx.asr.batching_whisper_pipeline import Segment
 from whisperx.audio import SAMPLE_RATE, AudioData, load_audio
 from whisperx.logging import get_logger
-from whisperx.types import DeviceType, SingleCharSegment, SingleWordSegment
+from whisperx.types import DeviceType
 from whisperx.utils import get_device, interpolate_nans
 
 if typing.TYPE_CHECKING:
     from _typeshed import StrPath
 
+DACITE_CONVERSION_CONFIG = dacite.Config(check_types=False)
+
 logger = get_logger(__name__)
-DACITE_CONVERTION_CONFIG = dacite.Config(check_types=False)
 
 
 class TypedWav2Vec2Processor(Wav2Vec2Processor):
@@ -49,39 +58,8 @@ class TypedWav2Vec2Processor(Wav2Vec2Processor):
         return super().from_pretrained(pretrained_model_name_or_path, **kwargs)  # pyright: ignore[reportUnknownMemberType]
 
 
-PipelineType: TypeAlias = Literal["torchaudio", "huggingface"]
+PipelineType: TypeAlias = Literal['torchaudio', 'huggingface']
 Dictionary: TypeAlias = dict[str, int]
-
-
-@dataclass(slots=True)
-class PreprocessResult:
-    clean_char: list[str]
-    clean_cdx: list[int]
-    clean_wdx: list[int]
-    sentence_spans: list[tuple[int, int]]
-
-
-@dataclass(slots=True)
-class SingleAlignedSegment:
-    """
-    A single segment (up to multiple sentences) of a speech with word alignment.
-    """
-
-    start: float
-    end: float
-    text: str
-    words: list[SingleWordSegment]
-    chars: list[SingleCharSegment] | None = None
-
-
-@dataclass(slots=True)
-class AlignedTranscriptionResult:
-    """
-    A list of segments and word segments of a speech.
-    """
-
-    segments: list[SingleAlignedSegment]
-    word_segments: list[SingleWordSegment]
 
 
 class AlignModelWrapper:
@@ -113,7 +91,7 @@ class AlignModelWrapper:
     def load(
         cls,
         language_code: AlignLanguageCode,
-        device: DeviceType | torch.device = "auto",
+        device: DeviceType | torch.device = 'auto',
         model_name_or_path: str | None = None,
         model_dir: StrPath | None = None,
     ) -> AlignModelWrapper:
@@ -125,18 +103,18 @@ class AlignModelWrapper:
                 model_name_or_path = DEFAULT_ALIGN_MODELS_HF[language_code]
             else:
                 logger.error(
-                    f"There is no default alignment model set for this language ({language_code}).\
-                    Please find a wav2vec2.0 model finetuned on this language in https://huggingface.co/models, then pass the model name in --align_model [MODEL_NAME]"
+                    f'There is no default alignment model set for this language ({language_code}).\
+                    Please find a wav2vec2.0 model fine-tuned on this language in https://huggingface.co/models, then pass the model name in --align_model [MODEL_NAME]'
                 )
                 raise ValueError(
-                    f"No default align-model for language: {language_code}"
+                    f'No default align-model for language: {language_code}'
                 )
 
         pipeline_type: PipelineType
         if model_name_or_path in torchaudio.pipelines.__all__:
-            pipeline_type = "torchaudio"
+            pipeline_type = 'torchaudio'
             bundle = torchaudio.pipelines.__dict__[model_name_or_path]
-            model = bundle.get_model(dl_kwargs={"model_dir": model_dir})
+            model = bundle.get_model(dl_kwargs={'model_dir': model_dir})
             labels = bundle.get_labels()
             dictionary = {c.lower(): i for i, c in enumerate(labels)}
         else:
@@ -148,13 +126,13 @@ class AlignModelWrapper:
             except Exception as e:
                 logger.error(e)
                 logger.error(
-                    "Error loading model from huggingface, check https://huggingface.co/models for finetuned wav2vec2.0 models"
+                    'Error loading model from huggingface, check https://huggingface.co/models for fine-tuned wav2vec2.0 models'
                 )
                 raise ValueError(
                     f'The chosen align_model "{model_name_or_path}" could not be found in huggingface (https://huggingface.co/models) or torchaudio (https://pytorch.org/audio/stable/pipelines.html#id14)'
                 )
 
-            pipeline_type = "huggingface"
+            pipeline_type = 'huggingface'
 
             labels = processor.tokenizer.get_vocab()
             dictionary = {char.lower(): code for char, code in labels.items()}
@@ -164,16 +142,20 @@ class AlignModelWrapper:
     def _preprocess_segments(
         self, segments: Sequence[Segment]
     ) -> list[PreprocessResult]:
+        self.logger.debug(f'Starting segments preprocessing, {len(segments) = }')
+
         results: list[PreprocessResult] = []
 
-        for segment in segments:
+        for segment in tqdm(
+            segments, desc='Preprocessing segments', total=len(segments)
+        ):
             text = segment.text
             num_leading = len(text) - len(text.lstrip())
             num_trailing = len(text) - len(text.rstrip())
 
             # split into words
             if self._is_language_with_spaces:
-                per_word = text.split(" ")
+                per_word = text.split(' ')
             else:
                 per_word = text
 
@@ -183,7 +165,7 @@ class AlignModelWrapper:
                 char_ = char.lower()
                 # wav2vec2 models use "|" character to represent spaces
                 if self._is_language_with_spaces:
-                    char_ = char_.replace(" ", "|")
+                    char_ = char_.replace(' ', '|')
 
                 # ignore whitespace at beginning and end of transcript
                 if cdx < num_leading:
@@ -216,11 +198,8 @@ class AlignModelWrapper:
         self,
         segments: Sequence[Segment],
         audio: StrPath | AudioData | torch.Tensor,
-        interpolate_method: InterpolateOptions = "nearest",
+        interpolate_method: InterpolateOptions = 'nearest',
         return_char_alignments: bool = False,
-        # FIXME: Implement???
-        print_progress: bool = False,
-        combined_progress: bool = False,
     ) -> AlignedTranscriptionResult:
         """
         Align phoneme recognition predictions to known transcription.
@@ -239,20 +218,16 @@ class AlignModelWrapper:
 
         model_dictionary = self.dictionary
 
-        # TODO: Imeplement process printing???
-        # if print_progress:
-        #     base_progress = ((sdx + 1) / total_segments) * 100
-        #     percent_complete = (
-        #         (50 + base_progress / 2) if combined_progress else base_progress
-        #     )
-        #     print(f"Progress: {percent_complete:.2f}%...")
-
         # 1. Preprocess to keep only characters in dictionary
         preprocess_results = self._preprocess_segments(segments)
         aligned_segments: list[SingleAlignedSegment] = []
 
         # 2. Get prediction matrix from alignment model & align
-        for sdx, (segment, preprocess) in enumerate(zip(segments, preprocess_results)):
+        for segment, preprocess in tqdm(
+            zip(segments, preprocess_results),
+            desc='Aligning segments',
+            total=len(segments),
+        ):
             t1 = segment.start
             t2 = segment.end
             text = segment.text
@@ -272,12 +247,12 @@ class AlignModelWrapper:
 
             if t1 >= max_duration or t2 - t1 < 0.02:
                 self.logger.info(
-                    "Failed to align segment: original start time longer than audio duration, skipping..."
+                    'Failed to align segment: original start time longer than audio duration, skipping...'
                 )
                 aligned_segments.append(aligned)
                 continue
 
-            text_clean = "".join(preprocess.clean_char)
+            text_clean = ''.join(preprocess.clean_char)
             tokens: npt.NDArray[np.int64] = np.array(
                 [model_dictionary[c] for c in text_clean], dtype=np.int64
             )
@@ -289,13 +264,13 @@ class AlignModelWrapper:
             waveform_segment = audio[:, f1:f2]
 
             with torch.inference_mode():
-                if self.pipeline_type == "torchaudio":
+                if self.pipeline_type == 'torchaudio':
                     emissions, _ = self.model(waveform_segment.to(self.device))
-                elif self.pipeline_type == "huggingface":
+                elif self.pipeline_type == 'huggingface':
                     emissions = self.model(waveform_segment.to(self.device)).logits
                 else:
                     raise NotImplementedError(
-                        f"Align model of type {self.pipeline_type} not supported."
+                        f'Align model of type {self.pipeline_type} not supported.'
                     )
                 emissions = torch.log_softmax(emissions, dim=-1)
 
@@ -303,14 +278,14 @@ class AlignModelWrapper:
 
             blank_id = 0
             for char, code in self.dictionary.items():
-                if char == "[pad]" or char == "<pad>":
+                if char == '[pad]' or char == '<pad>':
                     blank_id = code
 
             trellis = get_trellis(emission, tokens, blank_id)
             path = backtrack(trellis, emission, tokens, blank_id)
 
             if path is None:
-                logger.info(
+                self.logger.info(
                     f'Failed to align segment ("{text}"): backtrack failed, resorting to original...'
                 )
                 aligned_segments.append(aligned)
@@ -348,44 +323,44 @@ class AlignModelWrapper:
                 # increment word_idx, nltk word tokenization would probably be more robust here, but us space for now...
                 if self.language in LANGUAGES_WITHOUT_SPACES:
                     word_idx += 1
-                elif cdx == len(text) - 1 or text[cdx + 1] == " ":
+                elif cdx == len(text) - 1 or text[cdx + 1] == ' ':
                     word_idx += 1
 
             char_segments_df = pd.DataFrame(char_segments)
 
             aligned_subsegments: list[SingleAlignedSegment] = []
             # assign sentence_idx to each character index
-            char_segments_df["sentence-idx"] = None
-            for sdx, (sstart, send) in enumerate(preprocess.sentence_spans):
+            char_segments_df['sentence-idx'] = None
+            for sdx, (sent_start, sent_end) in enumerate(preprocess.sentence_spans):
                 select_range = cast(
                     pd.Series,
-                    (char_segments_df.index >= sstart)
-                    & (char_segments_df.index <= send),
+                    (char_segments_df.index >= sent_start)
+                    & (char_segments_df.index <= sent_end),
                 )
 
                 curr_chars = cast(Any, char_segments_df.loc[select_range])
                 char_segments_df.loc[
                     select_range,
-                    "sentence-idx",
+                    'sentence-idx',
                 ] = sdx
 
-                sentence_text = text[sstart:send]
-                sentence_start = curr_chars["start"].min()
-                sentence_end = curr_chars["end"].max()
+                sentence_text = text[sent_start:sent_end]
+                sentence_start = curr_chars['start'].min()
+                sentence_end = curr_chars['end'].max()
                 sentence_words: list[SingleWordSegment] = []
 
-                for word_idx in curr_chars["word_idx"].unique():
-                    word_chars = curr_chars.loc[curr_chars["word_idx"] == word_idx]
-                    word_text = "".join(word_chars["char"].tolist()).strip()
+                for word_idx in curr_chars['word_idx'].unique():
+                    word_chars = curr_chars.loc[curr_chars['word_idx'] == word_idx]
+                    word_text = ''.join(word_chars['char'].tolist()).strip()
                     if len(word_text) == 0:
                         continue
 
-                    # dont use space character for alignment
-                    word_chars = word_chars[word_chars["char"] != " "]
+                    # Don't use space character for alignment
+                    word_chars = word_chars[word_chars['char'] != ' ']
 
-                    word_start = word_chars["start"].min()
-                    word_end = word_chars["end"].max()
-                    word_score = round(word_chars["score"].mean(), 3)
+                    word_start = word_chars['start'].min()
+                    word_end = word_chars['end'].max()
+                    word_score = round(word_chars['score'].mean(), 3)
 
                     if (
                         np.isnan(word_start)
@@ -413,9 +388,9 @@ class AlignModelWrapper:
                 aligned_subsegments.append(sentence_segment)
 
                 if return_char_alignments:
-                    curr_chars = curr_chars[["char", "start", "end", "score"]]
+                    curr_chars = curr_chars[['char', 'start', 'end', 'score']]
                     curr_chars.fillna(-1, inplace=True)
-                    curr_chars = curr_chars.to_dict("records")
+                    curr_chars = curr_chars.to_dict('records')
                     curr_chars = [
                         {key: val for key, val in char.items() if val != -1}
                         for char in curr_chars
@@ -423,7 +398,7 @@ class AlignModelWrapper:
 
                     chars = [
                         dacite.from_dict(
-                            SingleCharSegment, data, DACITE_CONVERTION_CONFIG
+                            SingleCharSegment, data, DACITE_CONVERSION_CONFIG
                         )
                         for data in curr_chars
                     ]
@@ -433,27 +408,27 @@ class AlignModelWrapper:
             aligned_subsegments_df = pd.DataFrame(aligned_subsegments)
             del aligned_subsegments
 
-            aligned_subsegments_df["start"] = interpolate_nans(
-                cast(pd.Series, aligned_subsegments_df["start"]),
+            aligned_subsegments_df['start'] = interpolate_nans(
+                cast(pd.Series, aligned_subsegments_df['start']),
                 method=interpolate_method,
             )
-            aligned_subsegments_df["end"] = interpolate_nans(
-                cast(pd.Series, aligned_subsegments_df["end"]),
+            aligned_subsegments_df['end'] = interpolate_nans(
+                cast(pd.Series, aligned_subsegments_df['end']),
                 method=interpolate_method,
             )
 
             # concatenate sentences with same timestamps
-            agg_dict = {"text": " ".join, "words": "sum"}
+            agg_dict = {'text': ' '.join, 'words': 'sum'}
             if self.language in LANGUAGES_WITHOUT_SPACES:
-                agg_dict["text"] = "".join
+                agg_dict['text'] = ''.join
             if return_char_alignments:
-                agg_dict["chars"] = "sum"
+                agg_dict['chars'] = 'sum'
 
             aligned_subsegments = [
-                dacite.from_dict(SingleAlignedSegment, data, DACITE_CONVERTION_CONFIG)
+                dacite.from_dict(SingleAlignedSegment, data, DACITE_CONVERSION_CONFIG)
                 for data in cast(
                     list[dict[str, Any]],
-                    aligned_subsegments_df.to_dict("records"),  # pyright: ignore[reportUnknownMemberType]
+                    aligned_subsegments_df.to_dict('records'),  # pyright: ignore[reportUnknownMemberType]
                 )
             ]
 
@@ -467,119 +442,3 @@ class AlignModelWrapper:
         return AlignedTranscriptionResult(
             segments=aligned_segments, word_segments=word_segments
         )
-
-
-"""
-source: https://pytorch.org/tutorials/intermediate/forced_alignment_with_torchaudio_tutorial.html
-"""
-
-
-def get_trellis(
-    emission: torch.Tensor, tokens: npt.NDArray[np.int64], blank_id: int = 0
-):
-    num_frame = emission.size(0)
-    num_tokens = len(tokens)
-
-    # Trellis has extra diemsions for both time axis and tokens.
-    # The extra dim for tokens represents <SoS> (start-of-sentence)
-    # The extra dim for time axis is for simplification of the code.
-    trellis = torch.empty((num_frame + 1, num_tokens + 1))
-    trellis[0, 0] = 0
-    trellis[1:, 0] = torch.cumsum(emission[:, 0], 0)
-    trellis[0, -num_tokens:] = -float("inf")
-    trellis[-num_tokens:, 0] = float("inf")
-
-    for t in range(num_frame):
-        trellis[t + 1, 1:] = torch.maximum(
-            # Score for staying at the same token
-            trellis[t, 1:] + emission[t, blank_id],
-            # Score for changing to the next token
-            trellis[t, :-1] + emission[t, tokens],
-        )
-    return trellis
-
-
-@dataclass(slots=True)
-class Point:
-    token_index: int
-    time_index: int
-    score: float
-
-
-def backtrack(
-    trellis: torch.Tensor,
-    emission: torch.Tensor,
-    tokens: npt.NDArray[np.int64],
-    blank_id: int = 0,
-) -> list[Point] | None:
-    # Note:
-    # j and t are indices for trellis, which has extra dimensions
-    # for time and tokens at the beginning.
-    # When referring to time frame index `T` in trellis,
-    # the corresponding index in emission is `T-1`.
-    # Similarly, when referring to token index `J` in trellis,
-    # the corresponding index in transcript is `J-1`.
-    j = trellis.size(1) - 1
-    t_start = int(torch.argmax(trellis[:, j]).item())
-
-    path: list[Point] = []
-    for t in range(t_start, 0, -1):
-        # 1. Figure out if the current position was stay or change
-        # Note (again):
-        # `emission[J-1]` is the emission at time frame `J` of trellis dimension.
-        # Score for token staying the same from time frame J-1 to T.
-        stayed = trellis[t - 1, j] + emission[t - 1, blank_id]
-        # Score for token changing from C-1 at T-1 to J at T.
-        changed = trellis[t - 1, j - 1] + emission[t - 1, tokens[j - 1]]
-
-        # 2. Store the path with frame-wise probability.
-        prob = emission[t - 1, tokens[j - 1] if changed > stayed else 0].exp().item()
-        # Return token index and time index in non-trellis coordinate.
-        path.append(Point(j - 1, t - 1, prob))
-
-        # 3. Update the token
-        if changed > stayed:
-            j -= 1
-            if j == 0:
-                break
-    else:
-        logger.error("Backtracking failed")
-        # failed
-        return None
-    return path[::-1]
-
-
-# Merge the labels
-@dataclass
-class AlignedSegment:
-    label: str
-    start: int
-    end: int
-    score: float
-
-    def __repr__(self):
-        return f"{self.label}\t({self.score:4.2f}): [{self.start:5d}, {self.end:5d})"
-
-    @property
-    def length(self):
-        return self.end - self.start
-
-
-def merge_repeats(path: list[Point], transcript: str) -> list[AlignedSegment]:
-    i1, i2 = 0, 0
-    segments: list[AlignedSegment] = []
-    while i1 < len(path):
-        while i2 < len(path) and path[i1].token_index == path[i2].token_index:
-            i2 += 1
-        score = sum(path[k].score for k in range(i1, i2)) / (i2 - i1)
-        segments.append(
-            AlignedSegment(
-                transcript[path[i1].token_index],
-                path[i1].time_index,
-                path[i2 - 1].time_index + 1,
-                score,
-            )
-        )
-        i1 = i2
-
-    return segments

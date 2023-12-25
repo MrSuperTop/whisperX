@@ -2,16 +2,20 @@ import logging
 import logging.config
 from pathlib import Path
 
-MAIN_LOGGER_NAME = "whisperx"
+DEFAULT_MAIN_LOGGER_NAME = "whisperx"
+current_main_logger_name: None | str = None
 
 
 def setup_loggers(
-    main_logger_name: str = MAIN_LOGGER_NAME, log_file: Path = Path("./runtime.log")
+    main_logger_name: str = DEFAULT_MAIN_LOGGER_NAME, log_file: Path = Path("./runtime.log")
 ) -> logging.Logger:
+    global current_main_logger_name
+
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
 
     logger = root.getChild(main_logger_name)
+    current_main_logger_name = main_logger_name
 
     file_handler = logging.FileHandler(log_file, mode="w", encoding="utf-8")
 
@@ -31,12 +35,13 @@ def setup_loggers(
     logger.addHandler(file_handler)
     logger.addHandler(stdout_handler)
 
+    # * Also adding the faster_whisper logger as DEBUG
     logging.getLogger("faster_whisper").setLevel(logging.DEBUG)
 
     return logger
 
 
 def get_logger(module_name: str) -> logging.Logger:
-    logger = logging.getLogger(MAIN_LOGGER_NAME).getChild(module_name)
+    logger = logging.getLogger(current_main_logger_name).getChild(module_name)
 
     return logger

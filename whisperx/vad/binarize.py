@@ -1,20 +1,9 @@
-from collections.abc import Iterator
-from typing import Optional, cast
+from typing import Optional
 
 import numpy as np
 from pyannote.core import Annotation, Segment, SlidingWindowFeature
-from pyannote.core.annotation import TrackName
 
-
-def remove_shorter_than(min_duration_on: float, annotation: Annotation) -> None:
-    tracks_generator = cast(
-        Iterator[tuple[Segment, TrackName]],
-        annotation.itertracks(yield_label=False)
-    )
-
-    for segment, track in tracks_generator:
-        if segment.duration < min_duration_on:
-            del annotation[segment, track]
+from whisperx.vad.utils import remove_shorter_than
 
 
 class Binarize:
@@ -58,9 +47,8 @@ class Binarize:
         min_duration_off: float = 0.0,
         pad_onset: float = 0.0,
         pad_offset: float = 0.0,
-        max_duration: float = float('inf')
+        max_duration: float = float('inf'),
     ) -> None:
-
         super().__init__()
 
         self.onset = onset
@@ -109,13 +97,17 @@ class Binarize:
                     if curr_duration > self.max_duration:
                         search_after = len(curr_scores) // 2
                         # divide segment
-                        min_score_div_idx = search_after + np.argmin(curr_scores[search_after:])
+                        min_score_div_idx = search_after + np.argmin(
+                            curr_scores[search_after:]
+                        )
                         min_score_t = curr_timestamps[min_score_div_idx]
-                        region = Segment(start - self.pad_onset, min_score_t + self.pad_offset)
+                        region = Segment(
+                            start - self.pad_onset, min_score_t + self.pad_offset
+                        )
                         active[region, k] = label
                         start = curr_timestamps[min_score_div_idx]
-                        curr_scores = curr_scores[min_score_div_idx+1:]
-                        curr_timestamps = curr_timestamps[min_score_div_idx+1:]
+                        curr_scores = curr_scores[min_score_div_idx + 1 :]
+                        curr_timestamps = curr_timestamps[min_score_div_idx + 1 :]
                     # switching from active to inactive
                     elif y < self.offset:
                         region = Segment(start - self.pad_onset, t + self.pad_offset)
@@ -141,8 +133,8 @@ class Binarize:
         # because of padding, some active regions might be overlapping: merge them.
         # also: fill same speaker gaps shorter than min_duration_off
         if self.pad_offset > 0.0 or self.pad_onset > 0.0 or self.min_duration_off > 0.0:
-            if self.max_duration < float("inf"):
-                raise NotImplementedError("This would break current max_duration param")
+            if self.max_duration < float('inf'):
+                raise NotImplementedError('This would break current max_duration param')
             active = active.support(collar=self.min_duration_off)
 
         remove_shorter_than(self.min_duration_on, active)

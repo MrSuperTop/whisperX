@@ -6,11 +6,9 @@ import faster_whisper
 import faster_whisper.tokenizer
 import faster_whisper.transcribe
 
-from whisperx.asr.faster_whisper_pipeline import (
-    FasterWhisperPipeline as FasterWhisperPipeline,
-)
-from whisperx.asr.whisper_model import AsrOptions
-from whisperx.asr.whisper_model import BatchingWhisperModel as BatchingWhisperModel
+from whisperx.asr.batching_whisper import AsrOptions
+from whisperx.asr.batching_whisper import BatchingWhisperModel as BatchingWhisperModel
+from whisperx.asr.batching_whisper_pipeline import BatchingWhisperPipeline
 from whisperx.types import (
     ComputeType,
     DeviceType,
@@ -31,16 +29,16 @@ if typing.TYPE_CHECKING:
 # TODO: https://opennmt.net/CTranslate2/python/ctranslate2.converters.TransformersConverter.html
 def load_model(
     whisper_arch_or_path: ModelArchiveOrSize | StrPath,
-    device: DeviceType = "auto",
+    device: DeviceType = 'auto',
     device_index: int | list[int] = 0,
-    compute_type: ComputeType = "float16",
+    compute_type: ComputeType = 'float16',
     language: LanguageCode | None = None,
     asr_options: AsrOptions = AsrOptions(),
     vad_options: VadOptions = VadOptions(),
-    task: TaskType = "transcribe",
+    task: TaskType = 'transcribe',
     download_root: StrPath | None = None,
     threads: int = 4,
-) -> FasterWhisperPipeline:
+) -> BatchingWhisperPipeline:
     # TODO: Proper docstring
     """Load a Whisper model for inference.
     Args:
@@ -56,8 +54,8 @@ def load_model(
         A Whisper pipeline.
     """
 
-    if isinstance(whisper_arch_or_path, str) and whisper_arch_or_path.endswith(".en"):
-        language = "en"
+    if isinstance(whisper_arch_or_path, str) and whisper_arch_or_path.endswith('.en'):
+        language = 'en'
 
     whisper_arch_or_path = convert_path(whisper_arch_or_path)
 
@@ -71,6 +69,7 @@ def load_model(
         compute_type=compute_type,
         download_root=download_root,
         cpu_threads=threads,
+        num_workers=threads,
     )
 
     if language is not None:
@@ -82,7 +81,7 @@ def load_model(
         )
     else:
         print(
-            "No language specified, language will be first be detected for each audio file (increases inference time)."
+            'No language specified, language will be first be detected for each audio file (increases inference time).'
         )
         tokenizer = None
 
@@ -90,7 +89,7 @@ def load_model(
         device, vad_options, use_auth_token=None, model_dir=download_root
     )
 
-    return FasterWhisperPipeline(
+    return BatchingWhisperPipeline(
         model=model,
         vad_model=vad_model,
         options=asr_options,

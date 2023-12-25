@@ -1,13 +1,14 @@
 whisperx.egg-info/
 **/__pycache__/
+/runtime.log
 .ipynb_checkpoints
 
 datasets
 models
 
 .mypy_cache
+.ruff_cache
 .pytest_cache
 .idea
 .venv
 .vscode
-.mypy_cache

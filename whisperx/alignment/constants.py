@@ -1,8 +1,8 @@
 from typing import Literal, TypeAlias
 
-PUNKT_ABBREVIATIONS = set(["dr", "vs", "mr", "mrs", "prof"])
+PUNKT_ABBREVIATIONS = {"dr", "vs", "mr", "mrs", "prof"}
 
-LANGUAGES_WITHOUT_SPACES = set(["ja", "zh"])
+LANGUAGES_WITHOUT_SPACES = {"ja", "zh"}
 
 DefaultLanguageCodeTorch: TypeAlias = Literal["en", "fr", "de", "es", "it"]
 DEFAULT_ALIGN_MODELS_TORCH: dict[DefaultLanguageCodeTorch, str] = {

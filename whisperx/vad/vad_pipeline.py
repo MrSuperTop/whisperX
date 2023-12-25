@@ -56,7 +56,7 @@ class VoiceActivityDetectionPipeline(pipelines.VoiceActivityDetection):
         """
 
         # setup hook (e.g. for debugging purposes)
-        hook = self.setup_hook(file, hook=hook)
+        self.setup_hook(file, hook=hook)
 
         # apply segmentation model (only if needed)
         # output shape is (num_chunks, num_frames, 1)

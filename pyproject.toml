@@ -38,6 +38,9 @@ profile = "black"
 select = ['E', 'F', 'W', 'I', 'N', 'UP', 'E', 'W']
 ignore = ['N815', 'N802']
 
+[tool.ruff.format]
+quote-style = "single"
+
 [tool.pyright]
 typeCheckingMode = "strict"
 useLibraryCodeForTypes = true

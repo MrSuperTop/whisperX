@@ -5,7 +5,7 @@ import os
 import re
 import sys
 import zlib
-from typing import Any, Callable, Optional, TextIO
+from typing import Any, Callable, TextIO
 
 import pandas as pd
 import torch
@@ -229,8 +229,8 @@ class SubtitlesWriter(ResultWriter):
     decimal_marker: str
 
     def iterate_result(self, result: dict, options: dict):
-        raw_max_line_width: Optional[int] = options["max_line_width"]
-        max_line_count: Optional[int] = options["max_line_count"]
+        raw_max_line_width: int | None = options["max_line_width"]
+        max_line_count: int | None = options["max_line_count"]
         highlight_words: bool = options["highlight_words"]
         max_line_width = 1000 if raw_max_line_width is None else raw_max_line_width
         preserve_segments = max_line_count is None or raw_max_line_width is None

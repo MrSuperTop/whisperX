@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import typing
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from functools import lru_cache
-from pathlib import Path
-from typing import Any, cast
+from typing import cast
 
 import ctranslate2
 import ctranslate2.models
@@ -13,26 +10,13 @@ import faster_whisper
 import faster_whisper.tokenizer
 import faster_whisper.transcribe
 import numpy as np
-import numpy.typing as npt
 import tokenizers
-import torch
-import torch.nn.functional as F
 import torch.utils.data
-from transformers.pipelines.base import os
 
-from whisperx.audio import (
-    HOP_LENGTH,
-    N_FFT,
-    N_MELS,
-    N_SAMPLES,
-    SAMPLE_RATE,
-    AudioData,
-    load_audio,
-)
-from whisperx.types import DeviceType, LanguageCode
-
-if typing.TYPE_CHECKING:
-    from _typeshed import StrPath
+from whisperx.asr.types import LanguageDetails
+from whisperx.asr.utils import log_mel_spectrogram
+from whisperx.audio import N_SAMPLES, SAMPLE_RATE, AudioData
+from whisperx.types import LanguageCode
 
 
 class Features(torch.Tensor):
@@ -62,98 +46,10 @@ class AsrOptions:
     without_timestamps: bool = field(default=True)
     max_initial_timestamp: float = field(default=0.0)
     word_timestamps: bool = field(default=False)
-    prepend_punctuations: str = field(default="\"'“¿([{-")
-    append_punctuations: str = field(default="\"'.。,，!！?？:：”)]}、")
+    prepend_punctuations: str = field(default='"\'“¿([{-')
+    append_punctuations: str = field(default='"\'.。,，!！?？:：”)]}、')
 
     suppress_numerals: bool = field(default=True)
-
-
-@dataclass()
-class LanguageDetails:
-    language: LanguageCode
-    language_probability: float
-    all_language_probs: list[tuple[LanguageCode, float]] | None = field(default=None)
-
-    @classmethod
-    def get_defined(cls, for_language: LanguageCode) -> LanguageDetails:
-        return cls(
-            language=for_language, language_probability=1, all_language_probs=None
-        )
-
-
-@lru_cache(maxsize=None)
-def mel_filters(device: torch.device, n_mels: int = N_MELS) -> torch.Tensor:
-    """
-    load the mel filterbank matrix for projecting STFT into a Mel spectrogram.
-    Allows decoupling librosa dependency; saved using:
-
-        np.savez_compressed(
-            "mel_filters.npz",
-            mel_80=librosa.filters.mel(sr=16000, n_fft=400, n_mels=80),
-        )
-    """
-
-    assert n_mels == 80, f"Unsupported n_mels: {n_mels}"
-
-    with np.load(
-        os.path.join(os.path.dirname(__file__), "..", "assets", "mel_filters.npz")
-    ) as handle:
-        data: npt.NDArray[Any] = handle[f"mel_{n_mels}"]
-
-        return torch.from_numpy(data).to(device)  # pyright: ignore
-
-
-def log_mel_spectrogram(
-    audio: StrPath | AudioData | torch.Tensor,
-    n_mels: int = N_MELS,
-    padding: int = 0,
-    device: DeviceType | torch.device | None = None,
-) -> torch.Tensor:
-    """
-    Compute the log-Mel spectrogram of
-
-    Parameters
-    ----------
-    audio: Union[str, np.ndarray, torch.Tensor], shape = (*)
-        The path to audio or either a NumPy array or Tensor containing the audio waveform in 16 kHz
-
-    n_mels: int
-        The number of Mel-frequency filters, only 80 is supported
-
-    padding: int
-        Number of zero samples to pad to the right
-
-    device: Optional[Union[str, torch.device]]
-        If given, the audio tensor is moved to this device before STFT
-
-    Returns
-    -------
-    torch.Tensor, shape = (80, n_frames)
-        A Tensor that contains the Mel spectrogram
-    """
-
-    if not isinstance(audio, torch.Tensor):
-        if isinstance(audio, str | Path | os.PathLike):
-            audio = load_audio(audio)
-
-        audio = torch.from_numpy(audio)  # pyright: ignore
-
-    if device is not None:
-        audio = audio.to(device)
-    if padding > 0:
-        audio = F.pad(audio, (0, padding))
-
-    window = torch.hann_window(N_FFT).to(audio.device)
-    stft = torch.stft(audio, N_FFT, HOP_LENGTH, window=window, return_complex=True)
-    magnitudes = stft[..., :-1].abs() ** 2
-
-    filters = mel_filters(audio.device, n_mels)
-    mel_spec = filters @ magnitudes
-
-    log_spec = torch.clamp(mel_spec, min=1e-10).log10()
-    log_spec = torch.maximum(log_spec, log_spec.max() - 8.0)  # pyright: ignore [reportUnknownMemberType]
-    log_spec = (log_spec + 4.0) / 4.0
-    return log_spec
 
 
 class BatchingWhisperModel(faster_whisper.WhisperModel):
@@ -177,7 +73,7 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
         prompt_reset_since = 0
         if options.initial_prompt is not None:
             if isinstance(options.initial_prompt, str):
-                initial_prompt = " " + options.initial_prompt.strip()
+                initial_prompt = ' ' + options.initial_prompt.strip()
                 initial_prompt_tokens = tokenizer.encode(initial_prompt)
                 all_tokens.extend(initial_prompt_tokens)
             else:
@@ -201,6 +97,7 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
             max_length=self.max_length,
             suppress_blank=options.suppress_blank,
             suppress_tokens=options.suppress_tokens,
+            return_scores=True,
         )
 
         tokens_batch = [x.sequences_ids[0] for x in result]
@@ -222,7 +119,7 @@ class BatchingWhisperModel(faster_whisper.WhisperModel):
     def encode(self, features: AudioData) -> ctranslate2.StorageView:
         # When the model is running on multiple GPUs, the encoder output should be moved
         # to the CPU since we don't know which GPU will handle the next job.
-        to_cpu = self.model.device == "cuda" and len(self.model.device_index) > 1
+        to_cpu = self.model.device == 'cuda' and len(self.model.device_index) > 1
 
         # unsqueeze if batch size = 1
         if len(features.shape) == 2:

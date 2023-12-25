@@ -3,14 +3,14 @@ from pathlib import Path
 import pytest
 
 import whisperx
-from whisperx.asr.faster_whisper_pipeline import FasterWhisperPipeline
-from whisperx.asr.whisper_model import AsrOptions
+from whisperx.asr.batching_whisper_pipeline import BatchingWhisperPipeline
+from whisperx.asr.batching_whisper import AsrOptions
 
 DOWNLOAD_ROOT = Path("./models")
 
 
 @pytest.fixture(scope="class")
-def model() -> FasterWhisperPipeline:
+def model() -> BatchingWhisperPipeline:
     model = whisperx.load_model(
         "guillaumekln/faster-whisper-medium",
         compute_type="float32",

@@ -10,8 +10,14 @@ from .alignment import align, load_align_model
 from .asr import load_model
 from .audio import load_audio
 from .diarize import DiarizationPipeline, assign_word_speakers
-from .utils import (LANGUAGES, TO_LANGUAGE_CODE, get_writer, optional_float,
-                    optional_int, str2bool)
+from .utils import (
+    LANGUAGES,
+    TO_LANGUAGE_CODE,
+    get_writer,
+    optional_float,
+    optional_int,
+    str2bool,
+)
 
 
 def cli():
@@ -154,10 +160,9 @@ def cli():
     if args["max_line_count"] and not args["max_line_width"]:
         warnings.warn("--max_line_count has no effect without --max_line_width")
     writer_args = {arg: args.pop(arg) for arg in word_options}
-    
+
     # Part 1: VAD & ASR Loop
     results = []
-    tmp_results = []
     # model = load_model(model_name, device=device, download_root=model_dir)
     model = load_model(model_name, device=device, device_index=device_index, compute_type=compute_type, language=args['language'], asr_options=asr_options, vad_options={"vad_onset": vad_onset, "vad_offset": vad_offset}, task=task, threads=faster_whisper_threads)
 

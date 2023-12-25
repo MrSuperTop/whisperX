@@ -12,39 +12,30 @@ import faster_whisper.tokenizer
 import faster_whisper.transcribe
 import torch
 import torch.utils.data
+from tqdm import tqdm
 from transformers import Pipeline
 from transformers.pipelines.base import ModelOutput
 from transformers.pipelines.pt_utils import PipelineIterator
+from typing_extensions import override
 
-from whisperx.asr.whisper_model import (
+from whisperx.asr.batching_whisper import (
     AsrOptions,
     BatchingWhisperModel,
     Features,
     LanguageDetails,
     log_mel_spectrogram,
 )
+from whisperx.asr.types import Segment, TranscriptionResult
+from whisperx.asr.utils import find_numeral_symbol_tokens
 from whisperx.audio import N_SAMPLES, SAMPLE_RATE, AudioData, load_audio
 from whisperx.logging import get_logger
 from whisperx.types import DeviceType, LanguageCode, TaskType
 from whisperx.utils import get_device
 from whisperx.vad import SegmentsBoundsMerge, merge_chunks
-from whisperx.vad.vad_model import VoiceActivityDetectionPipeline
+from whisperx.vad.vad_pipeline import VoiceActivityDetectionPipeline
 
 if typing.TYPE_CHECKING:
     from _typeshed import StrPath
-
-
-def find_numeral_symbol_tokens(
-    tokenizer: faster_whisper.tokenizer.Tokenizer
-) -> list[int]:
-    numeral_symbol_tokens: list[int] = []
-    for i in range(tokenizer.eot):
-        token = tokenizer.decode([i]).removeprefix(" ")
-        has_numeral_symbol = any(c in "0123456789%$£" for c in token)
-        if has_numeral_symbol:
-            numeral_symbol_tokens.append(i)
-
-    return numeral_symbol_tokens
 
 
 class PreprocessParams(TypedDict):
@@ -60,7 +51,7 @@ class PostprocessParams(TypedDict):
     ...
 
 
-T = TypeVar("T", torch.Tensor, AudioData)
+T = TypeVar('T', torch.Tensor, AudioData)
 
 
 @dataclass()
@@ -71,21 +62,6 @@ class StackedAudio(Generic[T]):
 @dataclass()
 class BatchingWhisperOutput(ModelOutput):
     text: list[str] | str
-
-
-# FIXME: Move to types
-@dataclass(slots=True)
-class Segment:
-    start: float
-    end: float
-    text: str
-
-
-@dataclass(frozen=True)
-class TranscriptionResult:
-    segments: list[Segment]
-    language: LanguageCode
-    language_details: LanguageDetails
 
 
 def is_tokenizer_wrong_or_none(
@@ -100,7 +76,7 @@ def is_tokenizer_wrong_or_none(
     formatted_given_task: str
     if is_multilingual:
         formatted_given_task = cast(
-            str, tokenizer.tokenizer.token_to_id("<|%s|>" % check_task)
+            str, tokenizer.tokenizer.token_to_id('<|%s|>' % check_task)
         )  # pyright: ignore [reportUnknownMemberType]
     else:
         formatted_given_task = check_task
@@ -112,7 +88,7 @@ def is_tokenizer_wrong_or_none(
     return is_wrong_tokenizer
 
 
-class FasterWhisperPipeline(Pipeline):
+class BatchingWhisperPipeline(Pipeline):
     """
     Huggingface Pipeline wrapper for FasterWhisperModel.
     """
@@ -128,7 +104,7 @@ class FasterWhisperPipeline(Pipeline):
         options: AsrOptions = AsrOptions(),
         tokenizer: faster_whisper.tokenizer.Tokenizer | None = None,
         device: int | DeviceType | torch.device = -1,
-        framework: str = "pt",
+        framework: str = 'pt',
         language: LanguageCode | None = None,
         suppress_numerals: bool = False,
         batch_size: int | None = None,
@@ -137,6 +113,8 @@ class FasterWhisperPipeline(Pipeline):
         self.logger = get_logger(__name__)
 
         self.model = model
+
+        # TODO: Consider moving the tokenizer to BatchingWhisperModel class or straigt up feed the tokens into the model during forward instead of passing the tokenizer
         self._tokenizer = tokenizer
         self.options = options
         self.preset_language: LanguageCode | None = language
@@ -148,10 +126,11 @@ class FasterWhisperPipeline(Pipeline):
             self._forward_params,
             self._postprocess_params,
         ) = self._sanitize_parameters(**kwargs)
+
         self.call_count = 0
         self.framework = framework
 
-        if self.framework == "pt":
+        if self.framework == 'pt':
             self.device = get_device(device)
         else:
             self.device = device
@@ -163,11 +142,12 @@ class FasterWhisperPipeline(Pipeline):
         self, **kwargs: PreprocessParams
     ) -> tuple[PreprocessParams, ForwardParams, PostprocessParams]:
         preprocess_kwargs: PreprocessParams = {}
-        if "tokenizer" in kwargs:
-            preprocess_kwargs["maybe_arg"] = kwargs["maybe_arg"]
+        if 'tokenizer' in kwargs:
+            preprocess_kwargs['maybe_arg'] = kwargs['maybe_arg']
 
         return preprocess_kwargs, {}, {}
 
+    @override
     def preprocess(
         self, input_: StackedAudio[AudioData], **preprocessor_params: PreprocessParams
     ) -> StackedAudio[torch.Tensor]:
@@ -177,12 +157,13 @@ class FasterWhisperPipeline(Pipeline):
 
         return StackedAudio(inputs=features)
 
+    @override
     def _forward(
         self, input_tensors: StackedAudio[torch.Tensor]
     ) -> BatchingWhisperOutput:
         if self._tokenizer is None:
             raise ValueError(
-                "Could not do forward, the tokenizer on BatchingWhisperModel has to be defined"
+                'Could not do forward, the tokenizer on BatchingWhisperModel has to be defined'
             )
 
         outputs = self.model.generate_segment_batched(
@@ -191,6 +172,7 @@ class FasterWhisperPipeline(Pipeline):
 
         return BatchingWhisperOutput(text=outputs)
 
+    @override
     def postprocess(
         self,
         model_outputs: BatchingWhisperOutput,
@@ -209,8 +191,8 @@ class FasterWhisperPipeline(Pipeline):
     ):
         dataset = PipelineIterator(inputs, self.preprocess, preprocess_params)
 
-        if "TOKENIZERS_PARALLELISM" not in os.environ:
-            os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        if 'TOKENIZERS_PARALLELISM' not in os.environ:
+            os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
         # TODO: hack by collating feature_extractor and image_processor
 
@@ -253,24 +235,25 @@ class FasterWhisperPipeline(Pipeline):
     def _get_or_infer_language_details(
         self, features: AudioData | Features, given_language: LanguageCode | None = None
     ) -> LanguageDetails:
+        language: LanguageCode
         if given_language is None:
             if self.preset_language is not None:
                 return LanguageDetails.get_defined(self.preset_language)
 
             if not self.model.model.is_multilingual:
                 return LanguageDetails(
-                    language="en", language_probability=1, all_language_probs=None
+                    language='en', language_probability=1, all_language_probs=None
                 )
             else:
                 return self.model.detect_language(features)
         else:
-            if not self.model.model.is_multilingual and given_language != "en":
+            if not self.model.model.is_multilingual and given_language != 'en':
                 self.logger.warning(
                     "The current model is English-only but the language parameter is set to '%s'; "
                     "using 'en' instead." % given_language
                 )
 
-                language = "en"
+                language = 'en'
             else:
                 language = given_language
 
@@ -283,7 +266,7 @@ class FasterWhisperPipeline(Pipeline):
     def _get_tokenizer(
         self,
         for_language: LanguageCode | None,
-        for_task: TaskType = "transcribe",
+        for_task: TaskType = 'transcribe',
         for_audio: AudioData | None = None,
     ) -> tuple[LanguageDetails, faster_whisper.tokenizer.Tokenizer]:
         if (
@@ -296,7 +279,7 @@ class FasterWhisperPipeline(Pipeline):
             )
         else:
             raise ValueError(
-                f"Invalid configuration, atleast one param: {for_language = } or {for_audio = } has to be not None"
+                f'Invalid configuration, atleast one param: {for_language = } or {for_audio = } has to be not None'
             )
 
         if is_tokenizer_wrong_or_none(
@@ -329,25 +312,29 @@ class FasterWhisperPipeline(Pipeline):
         batch_size: int | None = None,
         num_workers: int = 0,
         language: LanguageCode | None = None,
-        task: TaskType = "transcribe",
+        task: TaskType = 'transcribe',
         chunk_size: int = 30,
-        # TODO: Make better?
-        print_progress: bool = False,
-        combined_progress: bool = False,
     ) -> TranscriptionResult:
         if isinstance(audio, os.PathLike | Path | str):
             loaded_audio = load_audio(audio)
         else:
             loaded_audio = audio
 
+        audio_duration = loaded_audio.shape[0] / SAMPLE_RATE
+        self.logger.info(f'Running VAD on audio, {audio_duration = }s')
+
         vad_segments = self.vad_model(
             {
-                "waveform": torch.from_numpy(loaded_audio).unsqueeze(0),  # pyright: ignore [reportUnknownMemberType]
-                "sample_rate": SAMPLE_RATE,
+                'waveform': torch.from_numpy(loaded_audio).unsqueeze(0),  # pyright: ignore [reportUnknownMemberType]
+                'sample_rate': SAMPLE_RATE,
             }
         )
 
         vad_segments = merge_chunks(vad_segments, chunk_size)
+        self.logger.info(
+            f'Split audio into {len(vad_segments)} chunk(s) (around {chunk_size} second(s) in length)'
+        )
+
         language_details, tokenizer = self._get_tokenizer(language, task, loaded_audio)
 
         previous_suppress_tokens = None
@@ -355,10 +342,12 @@ class FasterWhisperPipeline(Pipeline):
             previous_suppress_tokens = self.options.suppress_tokens
             numeral_symbol_tokens = find_numeral_symbol_tokens(tokenizer)
 
-            print(f"Suppressing numeral and symbol tokens: {numeral_symbol_tokens}")
+            self.logger.info(
+                f'Suppressing numeral and symbol tokens: {numeral_symbol_tokens}'
+            )
 
             if self.options.suppress_tokens is None:
-                raise ValueError("Options supress tokens is None but it should not.")
+                raise ValueError('Options supress tokens is None but it should not.')
 
             new_suppressed_tokens = numeral_symbol_tokens + self.options.suppress_tokens
             new_suppressed_tokens = list(set(new_suppressed_tokens))
@@ -366,7 +355,6 @@ class FasterWhisperPipeline(Pipeline):
 
         segments: list[Segment] = []
         batch_size = batch_size or self._batch_size
-        total_segments = len(vad_segments)
 
         def slice_data_by_vad_segments(
             audio: AudioData, segments: list[SegmentsBoundsMerge]
@@ -377,20 +365,17 @@ class FasterWhisperPipeline(Pipeline):
 
                 yield StackedAudio(inputs=audio[f1:f2])
 
-        for idx, out in enumerate(
-            self.__call__(
-                slice_data_by_vad_segments(loaded_audio, vad_segments),
-                batch_size=batch_size,
-                num_workers=num_workers,
-            )
-        ):
-            if print_progress:
-                base_progress = ((idx + 1) / total_segments) * 100
-                percent_complete = (
-                    base_progress / 2 if combined_progress else base_progress
+        for idx, out in tqdm(
+            enumerate(
+                self.__call__(
+                    slice_data_by_vad_segments(loaded_audio, vad_segments),
+                    batch_size=batch_size,
+                    num_workers=num_workers,
                 )
-                print(f"Progress: {percent_complete:.2f}%...")
-
+            ),
+            desc='Performing transription',
+            total=len(vad_segments),
+        ):
             if batch_size in [0, 1, None]:
                 text = out.text[0]
             else:
@@ -403,11 +388,6 @@ class FasterWhisperPipeline(Pipeline):
                     end=round(vad_segments[idx].end, 3),
                 )
             )
-
-        # FIXME: Should be removed as this case is already accounted for.
-        # revert the tokenizer if multilingual inference is enabled
-        # if self.preset_language is None:
-        #     self._tokenizer = None
 
         # revert suppressed tokens if suppress_numerals is enabled
         if self.suppress_numerals:
