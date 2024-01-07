@@ -4,6 +4,7 @@ import os
 import typing
 from dataclasses import asdict
 from typing import cast
+from pyannote.audio.core.model import Model
 
 import torch
 from pyannote.core.feature import SlidingWindowFeature
@@ -14,6 +15,7 @@ from whisperx.types import DeviceType
 from whisperx.utils import get_device
 from whisperx.utils.convert_path import convert_path
 from whisperx.vad.binarize import Binarize
+from whisperx.vad.download_model import download_model
 from whisperx.vad.types import SegmentId, SegmentsBoundsMerge
 from whisperx.vad.vad_pipeline import VadOptions, VoiceActivityDetectionPipeline
 
@@ -34,19 +36,17 @@ def load_vad_model(
     if model_dir is None or not os.path.isdir(model_dir):
         model_dir = cast(str, torch.hub.get_dir())
 
-    # FIXME:
-    # model_fp = download_model(model_dir)
-    # if model_fp is None:
-    #     raise ValueError(
-    #         'Could not download the vad model, please check the configured download links'
-    #     )
+    model_fp = download_model(model_dir)
+    if model_fp is None:
+        raise ValueError(
+            'Could not download the vad model, please check the configured download links'
+        )
 
     device = get_device(device)
 
-    # FIXME:
-    # vad_model = Model.from_pretrained(
-    #     convert_path(model_fp), use_auth_token=use_auth_token
-    # )
+    vad_model = Model.from_pretrained(
+        convert_path(model_fp), use_auth_token=use_auth_token
+    )
 
     hyperparameters = {
         'min_duration_on': 0.1,
@@ -54,16 +54,8 @@ def load_vad_model(
         **asdict(vad_options),
     }
 
-    # FIXME:
-    # vad_pipeline = VoiceActivityDetectionPipeline(
-    #     segmentation=vad_model, device=torch.device(device)
-    # )
-
-    # FIXME: Remove the token
     vad_pipeline = VoiceActivityDetectionPipeline(
-        'pyannote/segmentation',
-        use_auth_token='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',
-        device=torch.device(device),
+        segmentation=vad_model, device=torch.device(device)
     )
 
     vad_pipeline.instantiate(hyperparameters)
