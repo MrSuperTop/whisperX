@@ -1,13 +1,17 @@
+from enum import Enum
+from functools import cached_property as cached_property
+from typing import Literal, Optional, Sequence, Union
+
 import pytorch_lightning as pl
 import torch
 from _typeshed import Incomplete
-from enum import Enum
-from functools import cached_property as cached_property
 from pyannote.database import Protocol as Protocol
 from torch.utils.data import DataLoader, Dataset, IterableDataset
-from torch_audiomentations.core.transforms_interface import BaseWaveformTransform as BaseWaveformTransform
-from torchmetrics import Metric as Metric, MetricCollection
-from typing import Dict, List, Literal, Optional, Sequence, Text, Tuple, Union
+from torch_audiomentations.core.transforms_interface import (
+    BaseWaveformTransform as BaseWaveformTransform,
+)
+from torchmetrics import Metric as Metric
+from torchmetrics import MetricCollection
 
 class Problem(Enum):
     BINARY_CLASSIFICATION: int
@@ -27,8 +31,8 @@ class Specifications:
     resolution: Resolution
     duration: float
     min_duration: Optional[float]
-    warm_up: Optional[Tuple[float, float]]
-    classes: Optional[List[Text]]
+    warm_up: Optional[tuple[float, float]]
+    classes: Optional[list[str]]
     powerset_max_classes: Optional[int]
     permutation_invariant: bool
     @cached_property
@@ -37,7 +41,17 @@ class Specifications:
     def num_powerset_classes(self) -> int: ...
     def __len__(self) -> int: ...
     def __iter__(self): ...
-    def __init__(self, problem, resolution, duration, min_duration, warm_up, classes, powerset_max_classes, permutation_invariant) -> None: ...
+    def __init__(
+        self,
+        problem,
+        resolution,
+        duration,
+        min_duration,
+        warm_up,
+        classes,
+        powerset_max_classes,
+        permutation_invariant,
+    ) -> None: ...
 
 class TrainDataset(IterableDataset):
     task: Incomplete
@@ -62,10 +76,21 @@ class Task(pl.LightningDataModule):
     num_workers: Incomplete
     pin_memory: Incomplete
     augmentation: Incomplete
-    def __init__(self, protocol: Protocol, duration: float = ..., min_duration: float = ..., warm_up: Union[float, Tuple[float, float]] = ..., batch_size: int = ..., num_workers: int = ..., pin_memory: bool = ..., augmentation: BaseWaveformTransform = ..., metric: Union[Metric, Sequence[Metric], Dict[str, Metric]] = ...) -> None: ...
+    def __init__(
+        self,
+        protocol: Protocol,
+        duration: float = ...,
+        min_duration: float = ...,
+        warm_up: Union[float, tuple[float, float]] = ...,
+        batch_size: int = ...,
+        num_workers: int = ...,
+        pin_memory: bool = ...,
+        augmentation: BaseWaveformTransform = ...,
+        metric: Union[Metric, Sequence[Metric], dict[str, Metric]] = ...,
+    ) -> None: ...
     def prepare_data(self) -> None: ...
     @property
-    def specifications(self) -> Union[Specifications, Tuple[Specifications]]: ...
+    def specifications(self) -> Union[Specifications, tuple[Specifications]]: ...
     @property
     def has_setup_metadata(self): ...
     def setup_metadata(self) -> None: ...
@@ -74,14 +99,20 @@ class Task(pl.LightningDataModule):
     def train__len__(self) -> None: ...
     def collate_fn(self, batch, stage: str = ...) -> None: ...
     def train_dataloader(self) -> DataLoader: ...
-    def default_loss(self, specifications: Specifications, target, prediction, weight: Incomplete | None = ...) -> torch.Tensor: ...
+    def default_loss(
+        self,
+        specifications: Specifications,
+        target,
+        prediction,
+        weight: Incomplete | None = ...,
+    ) -> torch.Tensor: ...
     def common_step(self, batch, batch_idx: int, stage: Literal['train', 'val']): ...
     def training_step(self, batch, batch_idx: int): ...
     def val__getitem__(self, idx) -> None: ...
     def val__len__(self) -> None: ...
     def val_dataloader(self) -> Optional[DataLoader]: ...
     def validation_step(self, batch, batch_idx: int): ...
-    def default_metric(self) -> Union[Metric, Sequence[Metric], Dict[str, Metric]]: ...
+    def default_metric(self) -> Union[Metric, Sequence[Metric], dict[str, Metric]]: ...
     @cached_property
     def metric(self) -> MetricCollection: ...
     def setup_validation_metric(self) -> None: ...

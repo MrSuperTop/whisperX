@@ -1,9 +1,24 @@
+from typing import Optional
+
 from _typeshed import Incomplete
-from ctranslate2.specs import common_spec as common_spec, model_spec as model_spec, transformer_spec as transformer_spec
-from typing import List, Optional, Tuple
+from ctranslate2.specs import (
+    common_spec as common_spec,
+)
+from ctranslate2.specs import (
+    model_spec as model_spec,
+)
+from ctranslate2.specs import (
+    transformer_spec as transformer_spec,
+)
 
 class WhisperConfig(model_spec.ModelConfig):
-    def __init__(self, suppress_ids: Optional[List[int]] = ..., suppress_ids_begin: Optional[List[int]] = ..., lang_ids: Optional[List[int]] = ..., alignment_heads: Optional[List[Tuple[int, int]]] = ...) -> None: ...
+    def __init__(
+        self,
+        suppress_ids: Optional[list[int]] = ...,
+        suppress_ids_begin: Optional[list[int]] = ...,
+        lang_ids: Optional[list[int]] = ...,
+        alignment_heads: Optional[list[tuple[int, int]]] = ...,
+    ) -> None: ...
 
 class WhisperSpec(model_spec.LanguageModelSpec):
     encoder: Incomplete

@@ -32,12 +32,12 @@ def mel_filters(device: torch.device, n_mels: int = N_MELS) -> torch.Tensor:
         )
     """
 
-    assert n_mels == 80, f"Unsupported n_mels: {n_mels}"
+    assert n_mels == 80, f'Unsupported n_mels: {n_mels}'
 
     with np.load(
-        os.path.join(os.path.dirname(__file__), "..", "assets", "mel_filters.npz")
+        os.path.join(os.path.dirname(__file__), '..', 'assets', 'mel_filters.npz')
     ) as handle:
-        data: npt.NDArray[Any] = handle[f"mel_{n_mels}"]
+        data: npt.NDArray[Any] = handle[f'mel_{n_mels}']
 
         return torch.from_numpy(data).to(device)  # pyright: ignore
 
@@ -96,12 +96,12 @@ def log_mel_spectrogram(
 
 
 def find_numeral_symbol_tokens(
-    tokenizer: faster_whisper.tokenizer.Tokenizer
+    tokenizer: faster_whisper.tokenizer.Tokenizer,
 ) -> list[int]:
     numeral_symbol_tokens: list[int] = []
     for i in range(tokenizer.eot):
-        token = tokenizer.decode([i]).removeprefix(" ")
-        has_numeral_symbol = any(c in "0123456789%$£" for c in token)
+        token = tokenizer.decode([i]).removeprefix(' ')
+        has_numeral_symbol = any(c in '0123456789%$£' for c in token)
         if has_numeral_symbol:
             numeral_symbol_tokens.append(i)
 

@@ -1,5 +1,13 @@
 from ctranslate2.converters.converter import Converter as Converter
-from ctranslate2.specs import common_spec as common_spec, model_spec as model_spec, transformer_spec as transformer_spec
+from ctranslate2.specs import (
+    common_spec as common_spec,
+)
+from ctranslate2.specs import (
+    model_spec as model_spec,
+)
+from ctranslate2.specs import (
+    transformer_spec as transformer_spec,
+)
 
 class OpenAIGPT2Converter(Converter):
     def __init__(self, model_dir: str) -> None: ...

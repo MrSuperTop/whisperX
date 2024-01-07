@@ -1,6 +1,10 @@
-from .speaker_diarization import SpeakerDiarizationProtocol as SpeakerDiarizationProtocol
-from _typeshed import Incomplete
 from collections.abc import Generator
+
+from _typeshed import Incomplete
+
+from .speaker_diarization import (
+    SpeakerDiarizationProtocol as SpeakerDiarizationProtocol,
+)
 
 class SpeakerSpottingProtocol(SpeakerDiarizationProtocol):
     def trn_iter(self) -> None: ...

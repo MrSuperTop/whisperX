@@ -1,7 +1,14 @@
-from _typeshed import Incomplete
-from typing import Any, Mapping, Optional, Text
+from typing import Any, Mapping, Optional
 
-def logging_hook(step_name: Text, step_artifact: Any, file: Optional[Mapping] = ..., completed: Optional[int] = ..., total: Optional[int] = ...): ...
+from _typeshed import Incomplete
+
+def logging_hook(
+    step_name: str,
+    step_artifact: Any,
+    file: Optional[Mapping] = ...,
+    completed: Optional[int] = ...,
+    total: Optional[int] = ...,
+): ...
 
 class ProgressHook:
     transient: Incomplete
@@ -11,4 +18,11 @@ class ProgressHook:
     def __exit__(self, *args) -> None: ...
     step_name: Incomplete
     step: Incomplete
-    def __call__(self, step_name: Text, step_artifact: Any, file: Optional[Mapping] = ..., total: Optional[int] = ..., completed: Optional[int] = ...): ...
+    def __call__(
+        self,
+        step_name: str,
+        step_artifact: Any,
+        file: Optional[Mapping] = ...,
+        total: Optional[int] = ...,
+        completed: Optional[int] = ...,
+    ): ...

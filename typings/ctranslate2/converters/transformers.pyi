@@ -1,14 +1,38 @@
 import abc
+from typing import Optional
+
 from _typeshed import Incomplete
 from ctranslate2.converters import utils as utils
 from ctranslate2.converters.converter import Converter as Converter
-from ctranslate2.specs import attention_spec as attention_spec, common_spec as common_spec, model_spec as model_spec, transformer_spec as transformer_spec, whisper_spec as whisper_spec
-from typing import List, Optional
+from ctranslate2.specs import (
+    attention_spec as attention_spec,
+)
+from ctranslate2.specs import (
+    common_spec as common_spec,
+)
+from ctranslate2.specs import (
+    model_spec as model_spec,
+)
+from ctranslate2.specs import (
+    transformer_spec as transformer_spec,
+)
+from ctranslate2.specs import (
+    whisper_spec as whisper_spec,
+)
 
 def register_loader(config_name): ...
 
 class TransformersConverter(Converter):
-    def __init__(self, model_name_or_path: str, activation_scales: Optional[str] = ..., copy_files: Optional[List[str]] = ..., load_as_float16: bool = ..., revision: Optional[str] = ..., low_cpu_mem_usage: bool = ..., trust_remote_code: bool = ...) -> None: ...
+    def __init__(
+        self,
+        model_name_or_path: str,
+        activation_scales: Optional[str] = ...,
+        copy_files: Optional[list[str]] = ...,
+        load_as_float16: bool = ...,
+        revision: Optional[str] = ...,
+        low_cpu_mem_usage: bool = ...,
+        trust_remote_code: bool = ...,
+    ) -> None: ...
     def load_model(self, model_class, model_name_or_path, **kwargs): ...
     def load_tokenizer(self, tokenizer_class, model_name_or_path, **kwargs): ...
     def get_model_file(self, filename): ...
@@ -108,7 +132,9 @@ class CodeGenLoader(ModelLoader):
     def get_vocabulary(self, model, tokenizer): ...
     def set_vocabulary(self, spec, tokens) -> None: ...
     def set_config(self, config, model, tokenizer) -> None: ...
-    def set_decoder(self, spec, module, rotary_dim, num_heads, embed_dim, mp_num) -> None: ...
+    def set_decoder(
+        self, spec, module, rotary_dim, num_heads, embed_dim, mp_num
+    ) -> None: ...
 
 class GPTNeoXLoader(ModelLoader):
     @property
@@ -197,7 +223,9 @@ class RWLoader(ModelLoader):
     def set_vocabulary(self, spec, tokens) -> None: ...
     def set_config(self, config, model, tokenizer) -> None: ...
     def set_decoder(self, spec, module) -> None: ...
-    def set_qkv_linear(self, spec, module, num_heads, num_kv: Incomplete | None = ...) -> None: ...
+    def set_qkv_linear(
+        self, spec, module, num_heads, num_kv: Incomplete | None = ...
+    ) -> None: ...
 
 class FalconLoader(RWLoader):
     def get_falcon_spec(self, model) -> None: ...

@@ -1,8 +1,10 @@
+from typing import Optional
+
 import numpy as np
+from _typeshed import Incomplete
+
 from ..parameter import Uniform as Uniform
 from ..pipeline import Pipeline as Pipeline
-from _typeshed import Incomplete
-from typing import Optional
 
 class HierarchicalAgglomerativeClustering(Pipeline):
     method: Incomplete
@@ -10,7 +12,13 @@ class HierarchicalAgglomerativeClustering(Pipeline):
     normalize: Incomplete
     use_threshold: Incomplete
     threshold: Incomplete
-    def __init__(self, method: Optional[str] = ..., metric: Optional[str] = ..., use_threshold: Optional[bool] = ..., normalize: Optional[bool] = ...) -> None: ...
+    def __init__(
+        self,
+        method: Optional[str] = ...,
+        metric: Optional[str] = ...,
+        use_threshold: Optional[bool] = ...,
+        normalize: Optional[bool] = ...,
+    ) -> None: ...
     def __call__(self, X: np.ndarray) -> np.ndarray: ...
 
 class AffinityPropagationClustering(Pipeline):

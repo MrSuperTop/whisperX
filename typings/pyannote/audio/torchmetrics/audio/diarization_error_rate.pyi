@@ -1,7 +1,8 @@
+from typing import Optional
+
 import torch
 from _typeshed import Incomplete
 from torchmetrics import Metric
-from typing import Optional
 
 class DiarizationErrorRate(Metric):
     higher_is_better: bool

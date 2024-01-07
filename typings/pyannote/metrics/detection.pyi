@@ -1,9 +1,14 @@
-from .base import BaseMetric as BaseMetric, f_measure as f_measure
-from .types import Details as Details, MetricComponents as MetricComponents
-from .utils import UEMSupportMixin as UEMSupportMixin
+from typing import Optional
+
 from _typeshed import Incomplete
-from pyannote.core import Annotation as Annotation, Timeline as Timeline
-from typing import Optional, Tuple
+from pyannote.core import Annotation as Annotation
+from pyannote.core import Timeline as Timeline
+
+from .base import BaseMetric as BaseMetric
+from .base import f_measure as f_measure
+from .types import Details as Details
+from .types import MetricComponents as MetricComponents
+from .utils import UEMSupportMixin as UEMSupportMixin
 
 DER_NAME: str
 DER_TOTAL: str
@@ -17,8 +22,16 @@ class DetectionErrorRate(UEMSupportMixin, BaseMetric):
     def metric_components(cls) -> MetricComponents: ...
     collar: Incomplete
     skip_overlap: Incomplete
-    def __init__(self, collar: float = ..., skip_overlap: bool = ..., **kwargs) -> None: ...
-    def compute_components(self, reference: Annotation, hypothesis: Annotation, uem: Optional[Timeline] = ..., **kwargs) -> Details: ...
+    def __init__(
+        self, collar: float = ..., skip_overlap: bool = ..., **kwargs
+    ) -> None: ...
+    def compute_components(
+        self,
+        reference: Annotation,
+        hypothesis: Annotation,
+        uem: Optional[Timeline] = ...,
+        **kwargs,
+    ) -> Details: ...
     def compute_metric(self, detail: Details) -> float: ...
 
 ACCURACY_NAME: str
@@ -32,7 +45,13 @@ class DetectionAccuracy(DetectionErrorRate):
     def metric_name(cls): ...
     @classmethod
     def metric_components(cls) -> MetricComponents: ...
-    def compute_components(self, reference: Annotation, hypothesis: Annotation, uem: Optional[Timeline] = ..., **kwargs) -> Details: ...
+    def compute_components(
+        self,
+        reference: Annotation,
+        hypothesis: Annotation,
+        uem: Optional[Timeline] = ...,
+        **kwargs,
+    ) -> Details: ...
     def compute_metric(self, detail: Details) -> float: ...
 
 PRECISION_NAME: str
@@ -44,7 +63,13 @@ class DetectionPrecision(DetectionErrorRate):
     def metric_name(cls): ...
     @classmethod
     def metric_components(cls) -> MetricComponents: ...
-    def compute_components(self, reference: Annotation, hypothesis: Annotation, uem: Optional[Timeline] = ..., **kwargs) -> Details: ...
+    def compute_components(
+        self,
+        reference: Annotation,
+        hypothesis: Annotation,
+        uem: Optional[Timeline] = ...,
+        **kwargs,
+    ) -> Details: ...
     def compute_metric(self, detail: Details) -> float: ...
 
 RECALL_NAME: str
@@ -56,7 +81,13 @@ class DetectionRecall(DetectionErrorRate):
     def metric_name(cls): ...
     @classmethod
     def metric_components(cls) -> MetricComponents: ...
-    def compute_components(self, reference: Annotation, hypothesis: Annotation, uem: Optional[Timeline] = ..., **kwargs) -> Details: ...
+    def compute_components(
+        self,
+        reference: Annotation,
+        hypothesis: Annotation,
+        uem: Optional[Timeline] = ...,
+        **kwargs,
+    ) -> Details: ...
     def compute_metric(self, detail: Details) -> float: ...
 
 DFS_NAME: str
@@ -72,10 +103,20 @@ class DetectionPrecisionRecallFMeasure(UEMSupportMixin, BaseMetric):
     collar: Incomplete
     skip_overlap: Incomplete
     beta: Incomplete
-    def __init__(self, collar: float = ..., skip_overlap: bool = ..., beta: float = ..., **kwargs) -> None: ...
-    def compute_components(self, reference: Annotation, hypothesis: Annotation, uem: Optional[Timeline] = ..., **kwargs) -> Details: ...
+    def __init__(
+        self, collar: float = ..., skip_overlap: bool = ..., beta: float = ..., **kwargs
+    ) -> None: ...
+    def compute_components(
+        self,
+        reference: Annotation,
+        hypothesis: Annotation,
+        uem: Optional[Timeline] = ...,
+        **kwargs,
+    ) -> Details: ...
     def compute_metric(self, detail: Details) -> float: ...
-    def compute_metrics(self, detail: Optional[Details] = ...) -> Tuple[float, float, float]: ...
+    def compute_metrics(
+        self, detail: Optional[Details] = ...
+    ) -> tuple[float, float, float]: ...
 
 DCF_NAME: str
 DCF_POS_TOTAL: str
@@ -88,10 +129,23 @@ class DetectionCostFunction(UEMSupportMixin, BaseMetric):
     skip_overlap: Incomplete
     fa_weight: Incomplete
     miss_weight: Incomplete
-    def __init__(self, collar: float = ..., skip_overlap: bool = ..., fa_weight: float = ..., miss_weight: float = ..., **kwargs) -> None: ...
+    def __init__(
+        self,
+        collar: float = ...,
+        skip_overlap: bool = ...,
+        fa_weight: float = ...,
+        miss_weight: float = ...,
+        **kwargs,
+    ) -> None: ...
     @classmethod
     def metric_name(cls): ...
     @classmethod
     def metric_components(cls) -> MetricComponents: ...
-    def compute_components(self, reference: Annotation, hypothesis: Annotation, uem: Optional[Timeline] = ..., **kwargs) -> Details: ...
+    def compute_components(
+        self,
+        reference: Annotation,
+        hypothesis: Annotation,
+        uem: Optional[Timeline] = ...,
+        **kwargs,
+    ) -> Details: ...
     def compute_metric(self, components: Details) -> float: ...

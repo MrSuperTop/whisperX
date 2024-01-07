@@ -21,17 +21,14 @@ class OracleVoiceActivityDetection(Pipeline):
     @staticmethod
     def apply(file: AudioFile) -> Annotation: ...
 
-
 Hook = Callable[[str, Any, AudioFile], Any]
 Direction = Literal['maximize', 'minimize']
-
 
 class VadParamsDict(TypedDict):
     onset: float
     offset: float
     min_duration_on: NotRequired[float]
     max_duration_off: NotRequired[float]
-
 
 class VoiceActivityDetection(Pipeline):
     """Voice activity detection pipeline
@@ -68,28 +65,20 @@ class VoiceActivityDetection(Pipeline):
     training: bool
 
     @staticmethod
-    def setup_hook(file: AudioFile, hook: Hook | None = None) -> Hook:
-        ...
-
+    def setup_hook(file: AudioFile, hook: Hook | None = None) -> Hook: ...
     def __init__(
         self,
-        segmentation: PipelineModel = "pyannote/segmentation",
+        segmentation: PipelineModel = 'pyannote/segmentation',
         fscore: bool = False,
         use_auth_token: str | None = None,
         **inference_kwargs: Any,
-    ) -> None:
-        ...
-
-    def default_parameters(self) -> VadParamsDict:
-        ...
-
-    def classes(self) -> list[Literal['SPEECH']]:
-        ...
-
+    ) -> None: ...
+    def default_parameters(self) -> VadParamsDict: ...
+    def classes(self) -> list[Literal['SPEECH']]: ...
     def initialize(self) -> None:
         """Initialize pipeline with current set of parameters"""
 
-    CACHED_SEGMENTATION = "cache/segmentation/inference"
+    CACHED_SEGMENTATION = 'cache/segmentation/inference'
 
     def apply(self, file: AudioFile, hook: Hook | None = None) -> Annotation:
         """Apply voice activity detection
@@ -116,8 +105,7 @@ class VoiceActivityDetection(Pipeline):
     def get_metric(self) -> DetectionErrorRate | DetectionPrecisionRecallFMeasure:
         """Return new instance of detection metric"""
 
-    def get_direction(self) -> Direction:
-        ...
+    def get_direction(self) -> Direction: ...
 
 class AdaptiveVoiceActivityDetection(Pipeline):
     inference: Incomplete
@@ -126,7 +114,12 @@ class AdaptiveVoiceActivityDetection(Pipeline):
     num_epochs: Incomplete
     batch_size: Incomplete
     learning_rate: Incomplete
-    def __init__(self, segmentation: PipelineInference = ..., augmentation: PipelineAugmentation = ..., fscore: bool = ...) -> None: ...
+    def __init__(
+        self,
+        segmentation: PipelineInference = ...,
+        augmentation: PipelineAugmentation = ...,
+        fscore: bool = ...,
+    ) -> None: ...
     def apply(self, file: AudioFile) -> Annotation: ...
     def get_metric(self) -> DetectionErrorRate | DetectionPrecisionRecallFMeasure: ...
     def get_direction(self) -> Direction: ...

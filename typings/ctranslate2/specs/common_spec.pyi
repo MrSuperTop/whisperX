@@ -1,4 +1,5 @@
 import enum
+
 from _typeshed import Incomplete
 from ctranslate2.specs import model_spec as model_spec
 

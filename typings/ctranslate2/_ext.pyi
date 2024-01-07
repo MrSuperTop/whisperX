@@ -4,7 +4,7 @@
 # no doc
 
 # imports
-from typing import Any, Literal, overload
+from typing import Literal, overload
 
 import ctranslate2
 import pybind11_builtins as __pybind11_builtins
@@ -175,7 +175,7 @@ class DataType(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: object) -> str"""
-        return ""
+        return ''
 
     def __setstate__(self, state):  # real signature unknown; restored from __doc__
         """__setstate__(self: ctranslate2._ext.DataType, state: int) -> None"""
@@ -202,38 +202,38 @@ class DataType(__pybind11_builtins.pybind11_object):
     int32 = None  # (!) real value is '<DataType.int32: 3>'
     int8 = None  # (!) real value is '<DataType.int8: 1>'
     __entries = {
-        "bfloat16": (
+        'bfloat16': (
             None,  # (!) real value is '<DataType.bfloat16: 5>'
             None,
         ),
-        "float16": (
+        'float16': (
             None,  # (!) real value is '<DataType.float16: 4>'
             None,
         ),
-        "float32": (
+        'float32': (
             None,  # (!) real value is '<DataType.float32: 0>'
             None,
         ),
-        "int16": (
+        'int16': (
             None,  # (!) real value is '<DataType.int16: 2>'
             None,
         ),
-        "int32": (
+        'int32': (
             None,  # (!) real value is '<DataType.int32: 3>'
             None,
         ),
-        "int8": (
+        'int8': (
             None,  # (!) real value is '<DataType.int8: 1>'
             None,
         ),
     }
     __members__ = {
-        "bfloat16": None,  # (!) real value is '<DataType.bfloat16: 5>'
-        "float16": None,  # (!) real value is '<DataType.float16: 4>'
-        "float32": None,  # (!) real value is '<DataType.float32: 0>'
-        "int16": None,  # (!) real value is '<DataType.int16: 2>'
-        "int32": None,  # (!) real value is '<DataType.int32: 3>'
-        "int8": None,  # (!) real value is '<DataType.int8: 1>'
+        'bfloat16': None,  # (!) real value is '<DataType.bfloat16: 5>'
+        'float16': None,  # (!) real value is '<DataType.float16: 4>'
+        'float32': None,  # (!) real value is '<DataType.float32: 0>'
+        'int16': None,  # (!) real value is '<DataType.int16: 2>'
+        'int32': None,  # (!) real value is '<DataType.int32: 3>'
+        'int8': None,  # (!) real value is '<DataType.int8: 1>'
     }
 
 class Encoder(__pybind11_builtins.pybind11_object):
@@ -269,7 +269,7 @@ class Encoder(__pybind11_builtins.pybind11_object):
         pass
 
     def __init__(
-        self, model_path, device="cpu", *args, **kwargs
+        self, model_path, device='cpu', *args, **kwargs
     ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Encoder, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
@@ -332,7 +332,7 @@ class EncoderForwardOutput(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.EncoderForwardOutput) -> str"""
-        return ""
+        return ''
 
     last_hidden_state = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -351,7 +351,7 @@ class ExecutionStats(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.ExecutionStats) -> str"""
-        return ""
+        return ''
 
     num_examples = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -375,7 +375,7 @@ class GenerationResult(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.GenerationResult) -> str"""
-        return ""
+        return ''
 
     scores = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -399,7 +399,7 @@ class GenerationStepResult(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.GenerationStepResult) -> str"""
-        return ""
+        return ''
 
     batch_id = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -733,7 +733,7 @@ class Generator(__pybind11_builtins.pybind11_object):
         pass
 
     def __init__(
-        self, model_path, device="cpu", *args, **kwargs
+        self, model_path, device='cpu', *args, **kwargs
     ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Generator, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
@@ -821,7 +821,7 @@ class LogLevel(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: object) -> str"""
-        return ""
+        return ''
 
     def __setstate__(self, state):  # real signature unknown; restored from __doc__
         """__setstate__(self: ctranslate2._ext.LogLevel, state: int) -> None"""
@@ -849,43 +849,43 @@ class LogLevel(__pybind11_builtins.pybind11_object):
     Trace = None  # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
     Warning = None  # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
     __entries = {
-        "Critical": (
+        'Critical': (
             None,  # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
             None,
         ),
-        "Debug": (
+        'Debug': (
             None,  # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
             None,
         ),
-        "Error": (
+        'Error': (
             None,  # (!) forward: Error, real value is '<LogLevel.Error: -1>'
             None,
         ),
-        "Info": (
+        'Info': (
             None,  # (!) forward: Info, real value is '<LogLevel.Info: 1>'
             None,
         ),
-        "Off": (
+        'Off': (
             None,  # (!) forward: Off, real value is '<LogLevel.Off: -3>'
             None,
         ),
-        "Trace": (
+        'Trace': (
             None,  # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
             None,
         ),
-        "Warning": (
+        'Warning': (
             None,  # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
             None,
         ),
     }
     __members__ = {
-        "Critical": None,  # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
-        "Debug": None,  # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
-        "Error": None,  # (!) forward: Error, real value is '<LogLevel.Error: -1>'
-        "Info": None,  # (!) forward: Info, real value is '<LogLevel.Info: 1>'
-        "Off": None,  # (!) forward: Off, real value is '<LogLevel.Off: -3>'
-        "Trace": None,  # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
-        "Warning": None,  # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
+        'Critical': None,  # (!) forward: Critical, real value is '<LogLevel.Critical: -2>'
+        'Debug': None,  # (!) forward: Debug, real value is '<LogLevel.Debug: 2>'
+        'Error': None,  # (!) forward: Error, real value is '<LogLevel.Error: -1>'
+        'Info': None,  # (!) forward: Info, real value is '<LogLevel.Info: 1>'
+        'Off': None,  # (!) forward: Off, real value is '<LogLevel.Off: -3>'
+        'Trace': None,  # (!) forward: Trace, real value is '<LogLevel.Trace: 3>'
+        'Warning': None,  # (!) forward: Warning, real value is '<LogLevel.Warning: 0>'
     }
 
 class ScoringResult(__pybind11_builtins.pybind11_object):
@@ -895,7 +895,7 @@ class ScoringResult(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.ScoringResult) -> str"""
-        return ""
+        return ''
 
     log_probs = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -973,7 +973,7 @@ class StorageView(__pybind11_builtins.pybind11_object):
 
     def __str__(self):  # real signature unknown; restored from __doc__
         """__str__(self: ctranslate2._ext.StorageView) -> str"""
-        return ""
+        return ''
 
     device = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -1018,7 +1018,7 @@ class TranslationResult(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.TranslationResult) -> str"""
-        return ""
+        return ''
 
     attention = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -1377,7 +1377,7 @@ class Translator(__pybind11_builtins.pybind11_object):
         pass
 
     def __init__(
-        self, model_path, device="cpu", *args, **kwargs
+        self, model_path, device='cpu', *args, **kwargs
     ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Translator, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
@@ -1620,7 +1620,7 @@ class Whisper:
         pass
 
     def __init__(
-        self, model_path, device="cpu", *args, **kwargs
+        self, model_path, device='cpu', *args, **kwargs
     ):  # real signature unknown; NOTE: unreliably restored from __doc__
         """
         __init__(self: ctranslate2._ext.Whisper, model_path: str, device: str = 'cpu', *, device_index: Union[int, List[int]] = 0, compute_type: Union[str, Dict[str, str]] = 'default', inter_threads: int = 1, intra_threads: int = 0, max_queued_batches: int = 0, files: object = None) -> None
@@ -1688,7 +1688,7 @@ class WhisperAlignmentResult(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.WhisperAlignmentResult) -> str"""
-        return ""
+        return ''
 
     alignments = property(
         lambda self: object(), lambda self, v: None, lambda self: None
@@ -1707,7 +1707,7 @@ class WhisperGenerationResult(__pybind11_builtins.pybind11_object):
 
     def __repr__(self):  # real signature unknown; restored from __doc__
         """__repr__(self: ctranslate2._ext.WhisperGenerationResult) -> str"""
-        return ""
+        return ''
 
     no_speech_prob = property(
         lambda self: object(), lambda self, v: None, lambda self: None

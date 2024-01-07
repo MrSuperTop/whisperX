@@ -17,22 +17,22 @@ class VadOptions:
 
 Hook = Callable[[str, Any, Any], Any]
 
-DEFAULT_VAD_MODEL = "pyannote/segmentation"
+DEFAULT_SEGMENTATION_MODEL = 'pyannote/segmentation'
 
 
 class VoiceActivityDetectionPipeline(pipelines.VoiceActivityDetection):
     def __init__(
         self,
-        segmentation: PipelineModel = DEFAULT_VAD_MODEL,
+        segmentation: PipelineModel = DEFAULT_SEGMENTATION_MODEL,
         fscore: bool = False,
         use_auth_token: str | None = None,
-        **inference_kwargs: Any
+        **inference_kwargs: Any,
     ) -> None:
         super().__init__(
             segmentation=segmentation,
             fscore=fscore,
             use_auth_token=use_auth_token,
-            **inference_kwargs
+            **inference_kwargs,
         )
 
     def instantiate(self, params: dict[Any, Any]) -> Pipeline:
@@ -72,4 +72,4 @@ class VoiceActivityDetectionPipeline(pipelines.VoiceActivityDetection):
         return cast(Annotation, segmentations)
 
     def __call__(self, file: AudioFile, **kwargs: Any) -> SlidingWindowFeature:
-        return cast(SlidingWindowFeature, super().__call__(file, **kwargs)) # pyright: ignore [reportUnknownMemberType]
+        return cast(SlidingWindowFeature, super().__call__(file, **kwargs))  # pyright: ignore [reportUnknownMemberType]

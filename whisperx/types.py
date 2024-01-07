@@ -112,9 +112,10 @@ LanguageCode = Literal[
     'yi',
     'yo',
     'zh',
+    'yue',
 ]
 
-ALL_LANGUAGES = _LANGUAGE_CODES
+ALL_LANGUAGES: set[LanguageCode] = set(_LANGUAGE_CODES)
 ComputeType = Literal[
     'int8',
     'int8_float32',

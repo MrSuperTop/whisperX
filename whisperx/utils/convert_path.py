@@ -9,11 +9,18 @@ if typing.TYPE_CHECKING:
 
 
 @overload
-def convert_path(path: StrPath) -> str: ...
+def convert_path(path: StrPath) -> str:
+    ...
+
+
 @overload
-def convert_path(path: None) -> None: ...
+def convert_path(path: None) -> None:
+    ...
+
+
 @overload
-def convert_path(path: BinaryIO) -> BinaryIO: ...
+def convert_path(path: BinaryIO) -> BinaryIO:
+    ...
 
 
 def convert_path(path: StrPath | None | BinaryIO) -> str | None | BinaryIO:

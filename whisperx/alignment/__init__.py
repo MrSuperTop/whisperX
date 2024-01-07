@@ -26,7 +26,7 @@ from whisperx.alignment.constants import (
     DEFAULT_ALIGN_MODELS_TORCH,
     LANGUAGES_WITHOUT_SPACES,
     PUNKT_ABBREVIATIONS,
-    AlignLanguageCode,
+    AlignableLanguageCode,
 )
 from whisperx.alignment.types import (
     AlignedTranscriptionResult,
@@ -67,7 +67,7 @@ class AlignModelWrapper:
         self,
         model: Wav2Vec2ForCTC | torch.nn.Module,
         device_type: DeviceType | torch.device,
-        language: AlignLanguageCode,
+        language: AlignableLanguageCode,
         pipeline_type: PipelineType,
         dictionary: Dictionary,
     ) -> None:
@@ -90,7 +90,7 @@ class AlignModelWrapper:
     @classmethod
     def load(
         cls,
-        language_code: AlignLanguageCode,
+        language_code: AlignableLanguageCode,
         device: DeviceType | torch.device = 'auto',
         model_name_or_path: str | None = None,
         model_dir: StrPath | None = None,

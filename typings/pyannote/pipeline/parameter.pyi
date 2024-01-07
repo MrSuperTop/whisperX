@@ -1,8 +1,10 @@
-from .pipeline import Pipeline as Pipeline
-from _typeshed import Incomplete
 from collections.abc import Mapping
-from optuna.trial import Trial as Trial
 from typing import Any, Iterable
+
+from _typeshed import Incomplete
+from optuna.trial import Trial as Trial
+
+from .pipeline import Pipeline as Pipeline
 
 class Parameter: ...
 

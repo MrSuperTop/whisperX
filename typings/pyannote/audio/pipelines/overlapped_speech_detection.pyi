@@ -1,10 +1,16 @@
+from typing import Callable, Optional, Union
+
 from _typeshed import Incomplete
 from pyannote.audio.core.io import AudioFile as AudioFile
 from pyannote.audio.core.pipeline import Pipeline
 from pyannote.audio.pipelines.utils import PipelineModel as PipelineModel
-from pyannote.core import Annotation as Annotation, SlidingWindowFeature as SlidingWindowFeature
+from pyannote.core import (
+    Annotation as Annotation,
+)
+from pyannote.core import (
+    SlidingWindowFeature as SlidingWindowFeature,
+)
 from pyannote.metrics.detection import DetectionPrecisionRecallFMeasure
-from typing import Callable, Optional, Text, Union
 
 def to_overlap(annotation: Annotation) -> Annotation: ...
 
@@ -19,7 +25,14 @@ class OverlappedSpeechDetection(Pipeline):
     min_duration_off: Incomplete
     precision: Incomplete
     recall: Incomplete
-    def __init__(self, segmentation: PipelineModel = ..., precision: Optional[float] = ..., recall: Optional[float] = ..., use_auth_token: Union[Text, None] = ..., **inference_kwargs) -> None: ...
+    def __init__(
+        self,
+        segmentation: PipelineModel = ...,
+        precision: Optional[float] = ...,
+        recall: Optional[float] = ...,
+        use_auth_token: Union[str, None] = ...,
+        **inference_kwargs,
+    ) -> None: ...
     def default_parameters(self): ...
     def classes(self): ...
     def initialize(self) -> None: ...

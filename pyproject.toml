@@ -8,28 +8,24 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 nltk = "^3.8.1"
-transformers = { extras = ["torch"], version = "^4.33.3" }
-ffmpeg-python = "^0.2.0"
-pyannote-audio = "^3.0.1"
-numba = "^0.58.0"
-torch = "^2.1.0"
-torchaudio = "^2.1.0"
-torchvision = "^0.16.0"
+transformers = {extras = ["torch"], version = "^4.36.2"}
+pyannote-audio = {version = "^3.1.1"}
+torch = "^2.1.2"
+torchaudio = "^2.1.2"
 faster-whisper = "^0.10.0"
 dacite = "^1.8.1"
 
 [tool.poetry.group.test.dependencies]
 jiwer = "^3.0.3"
-pytest = "^7.4.2"
-datasets = "^2.14.5"
+pytest = "^7.4.4"
+datasets = "^2.16.1"
 
 
 [tool.poetry.group.dev.dependencies]
-isort = "^5.12.0"
-pyright = "^1.1.329"
-mypy = "^1.5.1"
-ruff = "^0.0.292"
-pybind11 = "^2.11.1"
+isort = "*"
+pyright = "^1"
+mypy = "^1"
+ruff = "*"
 
 [tool.isort]
 profile = "black"

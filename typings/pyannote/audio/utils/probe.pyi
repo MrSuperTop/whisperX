@@ -1,4 +1,5 @@
-import torch.nn as nn
-from typing import Callable, Dict, Text
+from typing import Callable
 
-def probe(trunk: nn.Module, branches: Dict[Text, Text]) -> Callable: ...
+import torch.nn as nn
+
+def probe(trunk: nn.Module, branches: dict[str, str]) -> Callable: ...

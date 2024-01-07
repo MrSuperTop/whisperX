@@ -1,8 +1,15 @@
+from typing import Optional, Union
+
 import pandas as pd
 from _typeshed import Incomplete
-from pyannote.core import Annotation as Annotation, Timeline as Timeline
-from pyannote.metrics.types import Details as Details, MetricComponents as MetricComponents
-from typing import Optional, Tuple, Union
+from pyannote.core import Annotation as Annotation
+from pyannote.core import Timeline as Timeline
+from pyannote.metrics.types import (
+    Details as Details,
+)
+from pyannote.metrics.types import (
+    MetricComponents as MetricComponents,
+)
 
 class BaseMetric:
     @classmethod
@@ -18,14 +25,28 @@ class BaseMetric:
     def reset(self) -> None: ...
     @property
     def name(self): ...
-    def __call__(self, reference: Union[Timeline, Annotation], hypothesis: Union[Timeline, Annotation], detailed: bool = ..., uri: Optional[str] = ..., **kwargs): ...
+    def __call__(
+        self,
+        reference: Union[Timeline, Annotation],
+        hypothesis: Union[Timeline, Annotation],
+        detailed: bool = ...,
+        uri: Optional[str] = ...,
+        **kwargs,
+    ): ...
     def report(self, display: bool = ...) -> pd.DataFrame: ...
     def __abs__(self): ...
     def __getitem__(self, component: str) -> Union[float, Details]: ...
     def __iter__(self): ...
-    def compute_components(self, reference: Union[Timeline, Annotation], hypothesis: Union[Timeline, Annotation], **kwargs) -> Details: ...
+    def compute_components(
+        self,
+        reference: Union[Timeline, Annotation],
+        hypothesis: Union[Timeline, Annotation],
+        **kwargs,
+    ) -> Details: ...
     def compute_metric(self, components: Details): ...
-    def confidence_interval(self, alpha: float = ...) -> Tuple[float, Tuple[float, float]]: ...
+    def confidence_interval(
+        self, alpha: float = ...
+    ) -> tuple[float, tuple[float, float]]: ...
 
 PRECISION_NAME: str
 PRECISION_RETRIEVED: str

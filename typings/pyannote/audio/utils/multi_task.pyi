@@ -1,4 +1,9 @@
-from pyannote.audio.core.model import Specifications
-from typing import Any, Callable, Tuple, Union
+from typing import Any, Callable, Union
 
-def map_with_specifications(specifications: Union[Specifications, Tuple[Specifications]], func: Callable, *iterables) -> Union[Any, Tuple[Any]]: ...
+from pyannote.audio.core.model import Specifications
+
+def map_with_specifications(
+    specifications: Union[Specifications, tuple[Specifications]],
+    func: Callable,
+    *iterables,
+) -> Union[Any, tuple[Any]]: ...

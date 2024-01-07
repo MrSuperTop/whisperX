@@ -197,7 +197,7 @@ class BatchingWhisperPipeline(Pipeline):
         # TODO: hack by collating feature_extractor and image_processor
 
         def stack(
-            items: Iterable[StackedAudio[torch.Tensor]]
+            items: Iterable[StackedAudio[torch.Tensor]],
         ) -> StackedAudio[torch.Tensor]:
             return StackedAudio(inputs=torch.stack([x.inputs for x in items]))
 

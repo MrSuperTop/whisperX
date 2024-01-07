@@ -33,10 +33,7 @@ TOKENS_PER_SECOND = exact_div(SAMPLE_RATE, N_SAMPLES_PER_TOKEN)  # 20ms per audi
 AudioData = npt.NDArray[np.float32]
 
 
-def load_audio(
-    file: StrPath | BinaryIO,
-    sr: int = SAMPLE_RATE
-) -> AudioData:
+def load_audio(file: StrPath | BinaryIO, sr: int = SAMPLE_RATE) -> AudioData:
     """
     Open an audio file and read as mono waveform, resampling as necessary
 
@@ -55,18 +52,14 @@ def load_audio(
 
     formatted_path = convert_path(file)
     audio_data = cast(
-        npt.NDArray[np.float32],
-        decode_audio(formatted_path, sr, split_stereo=False)
+        npt.NDArray[np.float32], decode_audio(formatted_path, sr, split_stereo=False)
     )
 
     return audio_data
 
 
 def pad_or_trim(
-    array: torch.Tensor | AudioData,
-    length: int = N_SAMPLES,
-    *,
-    axis: int = -1
+    array: torch.Tensor | AudioData, length: int = N_SAMPLES, *, axis: int = -1
 ) -> torch.Tensor | AudioData:
     """
     Pad or trim the audio array to N_SAMPLES, as expected by the encoder.
@@ -82,8 +75,7 @@ def pad_or_trim(
             pad_widths = [(0, 0)] * array.ndim
             pad_widths[axis] = (0, length - array.shape[axis])
             array = torch.nn.functional.pad(
-                array,
-                [pad for sizes in pad_widths[::-1] for pad in sizes]
+                array, [pad for sizes in pad_widths[::-1] for pad in sizes]
             )
     else:
         if array.shape[axis] > length:

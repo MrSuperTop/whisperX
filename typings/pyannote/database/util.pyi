@@ -1,11 +1,12 @@
-from .protocol.protocol import ProtocolFile as ProtocolFile
-from _typeshed import Incomplete
 from pathlib import Path as Path
-from pyannote.core import Annotation
-from typing import Text
 
-DatabaseName = Text
-PathTemplate = Text
+from _typeshed import Incomplete
+from pyannote.core import Annotation
+
+from .protocol.protocol import ProtocolFile as ProtocolFile
+
+DatabaseName = str
+PathTemplate = str
 
 def get_unique_identifier(item): ...
 def get_annotated(current_file): ...

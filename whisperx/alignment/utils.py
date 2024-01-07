@@ -105,7 +105,7 @@ def merge_repeats(path: list[Point], transcript: str) -> list[AlignedSegment]:
                 path[i1].time_index,
                 path[i2 - 1].time_index + 1,
                 score,
-                )
+            )
         )
         i1 = i2
 

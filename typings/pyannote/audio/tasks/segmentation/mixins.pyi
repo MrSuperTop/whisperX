@@ -1,9 +1,10 @@
 import random
+from collections.abc import Generator
+from typing import Sequence, Union
+
 import torch
 from _typeshed import Incomplete
-from collections.abc import Generator
 from torchmetrics import Metric as Metric
-from typing import Dict, Sequence, Union
 
 Subsets: Incomplete
 Scopes: Incomplete
@@ -22,7 +23,7 @@ class SegmentationTaskMixin:
     metadata_unique_values: Incomplete
     validation_chunks: Incomplete
     def setup(self) -> None: ...
-    def default_metric(self) -> Union[Metric, Sequence[Metric], Dict[str, Metric]]: ...
+    def default_metric(self) -> Union[Metric, Sequence[Metric], dict[str, Metric]]: ...
     def train__iter__helper(self, rng: random.Random, **filters): ...
     def train__iter__(self) -> Generator[Incomplete, None, None]: ...
     def collate_X(self, batch) -> torch.Tensor: ...

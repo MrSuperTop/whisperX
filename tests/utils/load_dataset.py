@@ -16,7 +16,7 @@ from whisperx.utils.convert_path import convert_path
 if typing.TYPE_CHECKING:
     from _typeshed import StrPath
 
-DatasetName = Literal["mozilla-foundation/common_voice_13_0"]
+DatasetName = Literal['mozilla-foundation/common_voice_13_0']
 
 
 class AudioDatasetObject(TypedDict):
@@ -33,7 +33,7 @@ class DatasetEntry(TypedDict):
     up_votes: int
     down_votes: int
     age: str
-    gender: Literal["male", "female"]
+    gender: Literal['male', 'female']
     accent: str
     locale: LanguageCode
     segment: str
@@ -49,9 +49,9 @@ class AudioDataset:
         def wrapper() -> Iterator[DatasetEntry]:
             entry: DatasetEntry
             for entry in self._dataset:
-                converted = entry["audio"]["array"].astype(dtype=np.float32)
+                converted = entry['audio']['array'].astype(dtype=np.float32)
 
-                entry["audio"]["array"] = converted
+                entry['audio']['array'] = converted
 
                 yield entry
 
@@ -61,7 +61,7 @@ class AudioDataset:
 def load_dataset(
     dataset_name: DatasetName,
     streaming: bool = True,
-    cache_dir: StrPath = Path("./datasets"),
+    cache_dir: StrPath = Path('./datasets'),
 ) -> AudioDataset:
     os.makedirs(cache_dir, exist_ok=True)
 
@@ -69,17 +69,15 @@ def load_dataset(
         datasets.Dataset,
         datasets.load_dataset(  # pyright: ignore [reportUnknownMemberType]
             dataset_name,
-            "en",
-            split="test",
+            'en',
+            split='test',
             cache_dir=convert_path(cache_dir),
             streaming=streaming,
         ),
     )
 
     base_dataset = base_dataset.cast_column(  # pyright: ignore [reportUnknownMemberType]
-        "audio", Audio(sampling_rate=16000, mono=True)
+        'audio', Audio(sampling_rate=16000, mono=True)
     ).shuffle()
 
     return AudioDataset(base_dataset)
-
-

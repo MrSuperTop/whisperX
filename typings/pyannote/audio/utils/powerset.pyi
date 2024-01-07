@@ -1,7 +1,8 @@
-import torch.nn as nn
-import torch
-from _typeshed import Incomplete
 from functools import cached_property as cached_property
+
+import torch
+import torch.nn as nn
+from _typeshed import Incomplete
 
 class Powerset(nn.Module):
     num_classes: Incomplete

@@ -1,5 +1,6 @@
+from typing import Hashable, Iterator, Union
+
 from _typeshed import Incomplete
-from typing import Hashable, Iterator, Tuple, Union
 
 Label = Hashable
 Support: Incomplete
@@ -10,4 +11,4 @@ Key: Incomplete
 Resource: Incomplete
 CropMode: Incomplete
 Alignment: Incomplete
-LabelStyle = Tuple[str, int, Tuple[float, float, float]]
+LabelStyle = tuple[str, int, tuple[float, float, float]]

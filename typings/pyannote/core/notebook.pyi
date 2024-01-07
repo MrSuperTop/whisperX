@@ -1,11 +1,16 @@
+from typing import Iterable
+
 import numpy as np
+from _typeshed import Incomplete
+
 from .annotation import Annotation as Annotation
 from .feature import SlidingWindowFeature as SlidingWindowFeature
-from .segment import Segment as Segment, SlidingWindow as SlidingWindow
+from .segment import Segment as Segment
+from .segment import SlidingWindow as SlidingWindow
 from .timeline import Timeline as Timeline
-from .utils.types import Label as Label, LabelStyle as LabelStyle, Resource as Resource
-from _typeshed import Incomplete
-from typing import Iterable
+from .utils.types import Label as Label
+from .utils.types import LabelStyle as LabelStyle
+from .utils.types import Resource as Resource
 
 MATPLOTLIB_IS_AVAILABLE: bool
 MATPLOTLIB_WARNING: str
@@ -18,14 +23,39 @@ class Notebook:
     @property
     def width(self): ...
     def __getitem__(self, label: Label) -> LabelStyle: ...
-    def setup(self, ax: Incomplete | None = ..., ylim=..., yaxis: bool = ..., time: bool = ...): ...
-    def draw_segment(self, ax, segment: Segment, y, label: Incomplete | None = ..., boundaries: bool = ...): ...
+    def setup(
+        self, ax: Incomplete | None = ..., ylim=..., yaxis: bool = ..., time: bool = ...
+    ): ...
+    def draw_segment(
+        self,
+        ax,
+        segment: Segment,
+        y,
+        label: Incomplete | None = ...,
+        boundaries: bool = ...,
+    ): ...
     def get_y(self, segments: Iterable[Segment]) -> np.ndarray: ...
     def __call__(self, resource: Resource, time: bool = ..., legend: bool = ...): ...
-    def plot_segment(self, segment, ax: Incomplete | None = ..., time: bool = ...) -> None: ...
-    def plot_timeline(self, timeline: Timeline, ax: Incomplete | None = ..., time: bool = ...): ...
-    def plot_annotation(self, annotation: Annotation, ax: Incomplete | None = ..., time: bool = ..., legend: bool = ...): ...
-    def plot_feature(self, feature: SlidingWindowFeature, ax: Incomplete | None = ..., time: bool = ..., ylim: Incomplete | None = ...): ...
+    def plot_segment(
+        self, segment, ax: Incomplete | None = ..., time: bool = ...
+    ) -> None: ...
+    def plot_timeline(
+        self, timeline: Timeline, ax: Incomplete | None = ..., time: bool = ...
+    ): ...
+    def plot_annotation(
+        self,
+        annotation: Annotation,
+        ax: Incomplete | None = ...,
+        time: bool = ...,
+        legend: bool = ...,
+    ): ...
+    def plot_feature(
+        self,
+        feature: SlidingWindowFeature,
+        ax: Incomplete | None = ...,
+        time: bool = ...,
+        ylim: Incomplete | None = ...,
+    ): ...
 
 notebook: Incomplete
 
