@@ -19,6 +19,7 @@ dacite = "^1.8.1"
 jiwer = "^3.0.3"
 pytest = "^7.4.4"
 datasets = "^2.16.1"
+python-dotenv = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]

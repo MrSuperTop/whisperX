@@ -36,6 +36,7 @@ def load_model(
     asr_options: AsrOptions = AsrOptions(),
     vad_options: VadOptions = VadOptions(),
     task: TaskType = 'transcribe',
+    use_auth_token: str | None = None,
     download_root: StrPath | None = None,
     threads: int = 4,
 ) -> BatchingWhisperPipeline:
@@ -86,7 +87,7 @@ def load_model(
         tokenizer = None
 
     vad_model = load_vad_model(
-        device, vad_options, use_auth_token=None, model_dir=download_root
+        device, vad_options, use_auth_token=use_auth_token, model_dir=download_root
     )
 
     return BatchingWhisperPipeline(

@@ -10,12 +10,13 @@ DOWNLOAD_ROOT = Path('./models')
 
 
 @pytest.fixture(scope='class')
-def model() -> BatchingWhisperPipeline:
+def model(hf_token: str) -> BatchingWhisperPipeline:
     model = whisperx.load_model(
         'guillaumekln/faster-whisper-medium',
         compute_type='float32',
         device='cuda',
         asr_options=AsrOptions(suppress_numerals=False, beam_size=10),
+        use_auth_token=hf_token,
         download_root=DOWNLOAD_ROOT,
     )
 

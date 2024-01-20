@@ -1,4 +1,3 @@
-
 import numpy as np
 from _typeshed import Incomplete
 from numpy.typing import ArrayLike as ArrayLike

@@ -11,4 +11,5 @@ models
 .pytest_cache
 .idea
 .venv
+.test.env
 .vscode

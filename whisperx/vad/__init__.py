@@ -4,12 +4,12 @@ import os
 import typing
 from dataclasses import asdict
 from typing import cast
-from pyannote.audio.core.model import Model
 
 import torch
+from pyannote.audio.core.model import Model
 from pyannote.core.feature import SlidingWindowFeature
 
-from whisperx.diarize import SegmentDiarized, SpeakerId
+from whisperx.diarize.types import SegmentDiarized, SpeakerId
 from whisperx.logging import get_logger
 from whisperx.types import DeviceType
 from whisperx.utils import get_device

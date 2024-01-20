@@ -1,4 +1,3 @@
-
 from _typeshed import Incomplete
 from ctranslate2.converters import utils as utils
 from ctranslate2.converters.converter import Converter as Converter

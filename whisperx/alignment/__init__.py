@@ -362,19 +362,15 @@ class AlignModelWrapper:
                     word_end = word_chars['end'].max()
                     word_score = round(word_chars['score'].mean(), 3)
 
-                    if (
-                        np.isnan(word_start)
-                        or np.isnan(word_end)
-                        or np.isnan(word_score)
-                    ):
-                        logger.error(
-                            "Some of the values are NaN for this word's segment, skipping it"
-                        )
-                        continue
+                    def none_if_nan(value: float) -> None | float:
+                        return None if np.isnan(value) else value
 
                     # NOTE: Values can be NaN for some reason?
                     word_segment = SingleWordSegment(
-                        word=word_text, start=word_start, end=word_end, score=word_score
+                        word=word_text,
+                        start=none_if_nan(word_start),
+                        end=none_if_nan(word_end),
+                        score=none_if_nan(word_score),
                     )
                     sentence_words.append(word_segment)
 

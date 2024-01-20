@@ -8,9 +8,9 @@ class SingleWordSegment:
     """
 
     word: str
-    start: float
-    end: float
-    score: float
+    start: float | None
+    end: float | None
+    score: float | None
 
 
 @dataclass(slots=True)
